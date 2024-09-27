@@ -1,0 +1,4 @@
+Credit card number: 1234 1234 1234 1234
+CCV: 789
+Date: 12/30
+
