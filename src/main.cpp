@@ -1,6 +1,6 @@
-#include "Encrypted.h"
-#include "Credit.h"
-#include "methods.h"
+#include "../header/Encrypted.h"
+#include "../header/Credit.h"
+#include "../header/methods.h"
 
 int main() {
     Date date1(12, 30);

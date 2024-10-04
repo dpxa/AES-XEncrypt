@@ -1,4 +1,4 @@
-#include "Encrypted.h"
+#include "../header/Encrypted.h"
 
 // when text is mutated in an Encrypted object, it is copied to the cipher key, shuffled, 
 // and the first 20 chracters act as the cipher key
