@@ -2,6 +2,7 @@
 #define METHODS_H
 
 #include "main.h"
+#include "Encrypted.h"
 
 // read entire content of a file to a string
 std::string get_string(std::ifstream& fin) {

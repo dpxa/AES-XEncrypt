@@ -1,30 +1,14 @@
 #include "../header/Encrypted.h"
-#include "../header/Credit.h"
 #include "../header/methods.h"
 
 int main() {
-    std::ofstream ofs("info.txt", std::ios::trunc);
-    ofs.close();
-
     try {
-        // Create Date objects for expiration dates
-        Date expirationDate1(12, 30);
-        Date expirationDate2(1, 15);
-        Date expirationDate3(6, 25);
-
-        // Create Credit objects for three different cards
-        Credit creditCard1("1234 1234 1234 1234", 789, expirationDate1);
-        Credit creditCard2("4321 4321 4321 4321", 456, expirationDate2);
-        Credit creditCard3("5678 5678 5678 5678", 123, expirationDate3);
-
-        // Write credit card information to the file
-        creditCard1.save("info.txt");
-        creditCard2.save("info.txt");
-        creditCard3.save("info.txt");
-        std::cout << "All credit card information saved to info.txt.\n";
+        std::string file;
+        std::cout << "Enter file to encrypt: ";
+        std::getline(std::cin, file);
 
         // Read text from the file and create an Encrypted object
-        Encrypted encryptedData(get_text("info.txt"), false);
+        Encrypted encryptedData(get_text(file), false);
         encryptedData.encrypt();
         encryptedData.save("encrypted.txt");
         std::cout << "Encrypted data saved to encrypted.txt.\n";

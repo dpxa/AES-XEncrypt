@@ -36,15 +36,15 @@ void Encrypted::decrypt() {
     }
 }
 
-// Shuffle the text and generate a random start position for encryption
-void Encrypted::shuffle() {
+void Encrypted::createKey() {
     std::random_device rd;
     std::mt19937 rng(rd());
-    
-    key.cipher = text; // Copy text to cipher key
-    std::shuffle(key.cipher.begin(), key.cipher.end(), rng); // Shuffle cipher key
-    key.cipher = key.cipher.substr(0, 20); // Keep only the first 20 characters
 
-    std::uniform_int_distribution<int> distribution(0, text.size() - 1);
-    key.start_pos = distribution(rng); // Randomly select start position
+    std::uniform_int_distribution<int> distribution(0, character_set.size() - 1);
+    key.cipher.clear();
+    
+    for (int i = 0; i < 20; ++i)
+        key.cipher += character_set[distribution(rng)];
+
+    key.start_pos = distribution(rng);
 }

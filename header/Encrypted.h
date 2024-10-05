@@ -13,6 +13,7 @@ private:
     std::string text;
     Key key;
     bool encrypt_state = false;
+    const std::string character_set = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
 
 public:
     // Default constructor
@@ -21,7 +22,7 @@ public:
     // Constructor to initialize text and encryption state
     Encrypted(const std::string& t, bool enc) 
         : text(t), encrypt_state(enc) {
-        shuffle();
+        createKey();
     }
 
     // Constructor to initialize key
@@ -36,7 +37,7 @@ public:
     void setStr(const std::string& t, bool enc) {
         text = t;
         encrypt_state = enc;
-        shuffle();
+        createKey();
     }
 
     // Setter for key
@@ -54,7 +55,7 @@ public:
     // Methods for encryption, decryption, and shuffling
     void encrypt();
     void decrypt();
-    void shuffle();
+    void createKey();
 
     // Output the text to a file
     void save(const std::string& out_file) const {
