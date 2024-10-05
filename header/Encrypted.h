@@ -1,3 +1,6 @@
+#ifndef ENCRYPTED_H
+#define ENCRYPTED_H
+
 #include "main.h"
 
 struct Key {
@@ -6,39 +9,70 @@ struct Key {
 };
 
 class Encrypted {
-    private:
+private:
     std::string text;
     Key key;
-    bool encrypt_state = 0;
+    bool encrypt_state = false;
 
-    public:
-    Encrypted() {}
-    
-    Encrypted(std::string t, bool enc) { text = t; encrypt_state = enc; shuffle(); }
+public:
+    // Default constructor
+    Encrypted() = default;
 
-    void set_str(std::string t, bool enc) { text = t; encrypt_state = enc; shuffle(); }
-    
-    Encrypted(Key k) { key = k; }
-    
-    void set_cipher(Key k) { key = k; }
-    
-    Encrypted(std::string t, Key k, bool enc) { text = t; key = k; encrypt_state = enc; }
-    
-    void set_all(std::string t, Key k, bool enc) { text = t; key = k; encrypt_state = enc; }
+    // Constructor to initialize text and encryption state
+    Encrypted(const std::string& t, bool enc) 
+        : text(t), encrypt_state(enc) {
+        shuffle();
+    }
 
+    // Constructor to initialize key
+    Encrypted(const Key& k) 
+        : key(k) {}
+
+    // Constructor to initialize text, key, and encryption state
+    Encrypted(const std::string& t, const Key& k, bool enc) 
+        : text(t), key(k), encrypt_state(enc) {}
+
+    // Setter for text and encryption state
+    void setStr(const std::string& t, bool enc) {
+        text = t;
+        encrypt_state = enc;
+        shuffle();
+    }
+
+    // Setter for key
+    void setCipher(const Key& k) {
+        key = k;
+    }
+
+    // Setter for all attributes
+    void setAll(const std::string& t, const Key& k, bool enc) {
+        text = t;
+        key = k;
+        encrypt_state = enc;
+    }
+
+    // Methods for encryption, decryption, and shuffling
     void encrypt();
-
     void decrypt();
-
     void shuffle();
 
-    void print_output(std::string out_file) {
+    // Output the text to a file
+    void save(const std::string& out_file) const {
         std::ofstream fout(out_file);
+        if (!fout)
+            throw std::runtime_error("Failed to open file for writing encrypted/decrypted text.");
+        
         fout << text;
     }
 
-    void print_output_key(std::string out_file) {
+    // Output the key to a file
+    void saveKey(const std::string& out_file) const {
         std::ofstream fout(out_file);
+        if (!fout)
+            throw std::runtime_error("Failed to open file for writing cipher.");
+
         fout << "Key:\n" << key.cipher << key.start_pos;
     }
 };
+
+#endif // ENCRYPTED_H
