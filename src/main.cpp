@@ -3,6 +3,9 @@
 #include "../header/methods.h"
 
 int main() {
+    std::ofstream ofs("info.txt", std::ios::trunc);
+    ofs.close();
+
     try {
         // Create Date objects for expiration dates
         Date expirationDate1(12, 30);
