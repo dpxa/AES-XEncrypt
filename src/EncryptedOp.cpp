@@ -2,10 +2,6 @@
 #include <random>
 
 void EncryptedText::encrypt() {
-    // if text is already encrypted, leave
-    if (isEncrypted)
-        return;
-
     // current offset in cipher and position in text we are encrypting
     size_t offset = 0;
     size_t pos = key.startPosition;
@@ -20,14 +16,9 @@ void EncryptedText::encrypt() {
         offset = (offset + 1) % cs;
         pos = (pos + 1) % ts;
     }
-        
-    isEncrypted = true;
 }
 
 void EncryptedText::decrypt() {
-    if (!isEncrypted)
-        return;
-
     // current offset in cipher and position in text we are decrypting
     size_t offset = 0;
     size_t pos = key.startPosition;
@@ -42,8 +33,6 @@ void EncryptedText::decrypt() {
         offset = (offset + 1) % cs;
         pos = (pos + 1) % ts;
     }
-    
-    isEncrypted = false;   
 }
 
 // create a random key for encryption

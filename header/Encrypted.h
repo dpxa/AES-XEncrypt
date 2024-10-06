@@ -26,6 +26,9 @@ public:
     void setText(const std::string& filePath);
     void setKeyAndState(const std::string& keyFile, bool encrypt);
 
+    bool customKey() { return hasCustomKey; }
+    bool encrypted() { return isEncrypted; }
+
     void generateKey();
     void encrypt();
     void decrypt();

@@ -12,4 +12,5 @@ add_executable(mac_encryption
     src/Encrypted.cpp 
     src/EncryptedIO.cpp 
     src/EncryptedOp.cpp
+    src/DirectoryDFS.cpp
 )

@@ -9,7 +9,7 @@ std::string EncryptedText::readFileToString(std::ifstream& fin) {
 }
 
 void EncryptedText::getTextFromFile(const std::string& inputFile) {
-    std::ifstream fin(inputFile);
+    std::ifstream fin(inputFile, std::ios::binary);
     if (!fin)
         throw std::runtime_error("Failed to open file.");
 
@@ -22,7 +22,7 @@ void EncryptedText::getKeyFromFile(const std::string& inputFile) {
         throw std::runtime_error("Failed to open key file.");
 
     // skip ahead past "Key: " (this is why we need to pass ifstream and not file name to readFileToString)
-    fin.seekg(5);
+    fin.seekg(6);
     // get key from file
     key.cipher = readFileToString(fin);
 
@@ -32,7 +32,7 @@ void EncryptedText::getKeyFromFile(const std::string& inputFile) {
 }
 
 void EncryptedText::saveToFile(const std::string& outputFile) const {
-    std::ofstream fout(outputFile);
+    std::ofstream fout(outputFile, std::ios::binary);
     if (!fout)
         throw std::runtime_error("Failed to open file for writing encrypted/decrypted text.");
         
