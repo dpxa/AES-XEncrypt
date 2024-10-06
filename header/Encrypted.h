@@ -3,77 +3,40 @@
 
 #include "main.h"
 
-struct Key {
+struct EncryptionKey {
     std::string cipher;
-    int start_pos = 0;
+    int startPosition = 0;
 };
 
-class Encrypted {
+class EncryptedText {
 private:
     std::string text;
-    Key key;
-    bool encrypt_state = false;
-    const std::string character_set = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+    EncryptionKey key;
+    bool isEncrypted = false;
+    bool hasCustomKey = false;
+    const std::string characterSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+    const int keyCreationSize = 20;
+
+    std::string readFileToString(std::ifstream& fin);
+    void getTextFromFile(const std::string& inputFile);
+    void getKeyFromFile(const std::string& inputFile);
 
 public:
-    // Default constructor
-    Encrypted() = default;
+    EncryptedText() = default;
+    EncryptedText(const std::string& filePath, bool encrypt);
+    EncryptedText(const std::string& keyFile);
+    EncryptedText(const std::string& filePath, const std::string& keyFile, bool encrypt);
 
-    // Constructor to initialize text and encryption state
-    Encrypted(const std::string& t, bool enc) 
-        : text(t), encrypt_state(enc) {
-        createKey();
-    }
+    void setTextAndState(const std::string& filePath, bool encrypt);
+    void setKeyFromFile(const std::string& keyFile);
+    void setAll(const std::string& filePath, const std::string& keyFile, bool encrypt);
 
-    // Constructor to initialize key
-    Encrypted(const Key& k) 
-        : key(k) {}
-
-    // Constructor to initialize text, key, and encryption state
-    Encrypted(const std::string& t, const Key& k, bool enc) 
-        : text(t), key(k), encrypt_state(enc) {}
-
-    // Setter for text and encryption state
-    void setStr(const std::string& t, bool enc) {
-        text = t;
-        encrypt_state = enc;
-        createKey();
-    }
-
-    // Setter for key
-    void setCipher(const Key& k) {
-        key = k;
-    }
-
-    // Setter for all attributes
-    void setAll(const std::string& t, const Key& k, bool enc) {
-        text = t;
-        key = k;
-        encrypt_state = enc;
-    }
-
-    // Methods for encryption, decryption, and shuffling
+    void generateKey();
     void encrypt();
     void decrypt();
-    void createKey();
 
-    // Output the text to a file
-    void save(const std::string& out_file) const {
-        std::ofstream fout(out_file);
-        if (!fout)
-            throw std::runtime_error("Failed to open file for writing encrypted/decrypted text.");
-        
-        fout << text;
-    }
-
-    // Output the key to a file
-    void saveKey(const std::string& out_file) const {
-        std::ofstream fout(out_file);
-        if (!fout)
-            throw std::runtime_error("Failed to open file for writing cipher.");
-
-        fout << "Key:\n" << key.cipher << key.start_pos;
-    }
+    void saveToFile(const std::string& outputFile) const;
+    void saveKeyToFile(const std::string& outputFile) const ;
 };
 
 #endif // ENCRYPTED_H

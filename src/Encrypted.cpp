@@ -1,50 +1,38 @@
 #include "../header/Encrypted.h"
 
-// Encrypt the text using the cipher key
-void Encrypted::encrypt() {
-    if (!encrypt_state) {
-        int offset = 0;
-        int pos = key.start_pos;
-    
-        for (size_t i = 0; i < text.size(); ++i) {
-            char& current_char = text[pos];
-            current_char = (current_char + key.cipher[offset]) % 128;
-            
-            offset = (offset + 1) % 20;
-            pos = (pos + 1) % text.size();
-        }
-        
-        encrypt_state = true;
-    }
+EncryptedText::EncryptedText(const std::string& filePath, bool encrypt) : isEncrypted(encrypt) {
+    getTextFromFile(filePath);
+
+    if (!hasCustomKey)
+        generateKey();
 }
 
-// Decrypt the text using the cipher key
-void Encrypted::decrypt() {
-    if (encrypt_state) {
-        int offset = 0;
-        int pos = key.start_pos;
-        
-        for (size_t i = 0; i < text.size(); ++i) {
-            char& current_char = text[pos];
-            current_char = (current_char + 128 - key.cipher[offset]) % 128;
-            
-            offset = (offset + 1) % 20;
-            pos = (pos + 1) % text.size();
-        }
-        
-        encrypt_state = false;
-    }
+EncryptedText::EncryptedText(const std::string& keyFile) : hasCustomKey(true) { 
+    getKeyFromFile(keyFile);
 }
 
-void Encrypted::createKey() {
-    std::random_device rd;
-    std::mt19937 rng(rd());
+EncryptedText::EncryptedText(const std::string& filePath, const std::string& keyFile, bool encrypt) : hasCustomKey(true), isEncrypted(encrypt) {
+    getTextFromFile(filePath);
+    getKeyFromFile(keyFile);
+}
 
-    std::uniform_int_distribution<int> distribution(0, character_set.size() - 1);
-    key.cipher.clear();
-    
-    for (int i = 0; i < 20; ++i)
-        key.cipher += character_set[distribution(rng)];
+void EncryptedText::setTextAndState(const std::string& filePath, bool encrypt) {
+    getTextFromFile(filePath);
+    isEncrypted = encrypt;
 
-    key.start_pos = distribution(rng);
+    if (!hasCustomKey)
+        generateKey();
+}
+
+void EncryptedText::setKeyFromFile(const std::string& keyFile) {
+    getKeyFromFile(keyFile);
+    hasCustomKey = true;
+}
+
+// setter for text, key, and encryption state
+void EncryptedText::setAll(const std::string& filePath, const std::string& keyFile, bool encrypt) {
+    getTextFromFile(filePath);
+    getKeyFromFile(keyFile);
+    hasCustomKey = true;
+    isEncrypted = encrypt;
 }
