@@ -10,7 +10,6 @@ class DirectoryDFS {
     EncryptedText encryptedText;
 
     void mutateFile(const std::filesystem::path& filePath);
-    void performDFSRecursively(const std::filesystem::path& currentDir);
 
     public:
     DirectoryDFS(const std::string& dirPath, const EncryptedText& et) : directoryPath(dirPath), encryptedText(et) {}

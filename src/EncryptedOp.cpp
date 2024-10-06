@@ -3,9 +3,13 @@
 
 void EncryptedText::encrypt() {
     // current offset in cipher and position in text we are encrypting
+    size_t ts = text.size();
+    if (ts == 0)
+        return;
+    
+    size_t cs = key.cipher.size();
     size_t offset = 0;
-    size_t pos = key.startPosition;
-    size_t ts = text.size(), cs = key.cipher.size();
+    size_t pos = key.startPosition % ts;
     
     for (size_t i = 0; i < ts; ++i) {
         // get current character and manipulate it
@@ -20,14 +24,18 @@ void EncryptedText::encrypt() {
 
 void EncryptedText::decrypt() {
     // current offset in cipher and position in text we are decrypting
+    size_t ts = text.size();
+    if (ts == 0)
+        return;
+    
+    size_t cs = key.cipher.size();
     size_t offset = 0;
-    size_t pos = key.startPosition;
-    size_t ts = text.size(), cs = key.cipher.size();
+    size_t pos = key.startPosition % ts;
         
     for (size_t i = 0; i < ts; ++i) {
         // get current character and manipulate it
         char& currentChar = text[pos];
-        currentChar = (currentChar + 128 - key.cipher[offset]) % 128;
+        currentChar = (currentChar - key.cipher[offset] + 128) % 128;
         
         // move to next position in cipher and text
         offset = (offset + 1) % cs;
