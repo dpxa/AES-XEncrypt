@@ -1,7 +1,6 @@
 #ifndef ENCRYPTED_H
 #define ENCRYPTED_H
-
-#include "main.h"
+#include <string>
 
 struct EncryptionKey {
     std::string cipher;

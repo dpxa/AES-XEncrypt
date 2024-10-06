@@ -1,4 +1,6 @@
 #include "../header/Encrypted.h"
+#include <fstream>
+#include <sstream>
 
 std::string EncryptedText::readFileToString(std::ifstream& fin) {
     std::ostringstream oss;

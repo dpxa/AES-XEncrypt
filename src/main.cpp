@@ -1,4 +1,5 @@
 #include "../header/Encrypted.h"
+#include <iostream>
 
 int main() {
     try {

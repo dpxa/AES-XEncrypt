@@ -1,4 +1,5 @@
 #include "../header/Encrypted.h"
+#include <random>
 
 void EncryptedText::encrypt() {
     // if text is already encrypted, leave
