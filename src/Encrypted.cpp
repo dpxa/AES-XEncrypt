@@ -6,6 +6,5 @@ void EncryptedText::setText(const std::string& filePath) {
 
 void EncryptedText::setKeyAndState(const std::string& keyFile, bool encrypt) {
     getKeyFromFile(keyFile);
-    hasCustomKey = true;
     isEncrypted = encrypt;
 }

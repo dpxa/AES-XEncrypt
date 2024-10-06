@@ -4,6 +4,7 @@
 void EncryptedText::encrypt() {
     // current offset in cipher and position in text we are encrypting
     size_t ts = text.size();
+    // if text size is 0, there is nothing to encrypt (error when % 0)
     if (ts == 0)
         return;
     
@@ -25,6 +26,7 @@ void EncryptedText::encrypt() {
 void EncryptedText::decrypt() {
     // current offset in cipher and position in text we are decrypting
     size_t ts = text.size();
+    // if text size is 0, there is nothing to decrypt (error when % 0)
     if (ts == 0)
         return;
     
@@ -43,10 +45,7 @@ void EncryptedText::decrypt() {
     }
 }
 
-// create a random key for encryption
 void EncryptedText::generateKey() {
-    hasCustomKey = false;
-
     // create rng
     std::random_device rd;
     std::mt19937 rng(rd());

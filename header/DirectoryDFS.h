@@ -9,10 +9,13 @@ class DirectoryDFS {
     std::string directoryPath;
     EncryptedText encryptedText;
 
-    void mutateFile(const std::filesystem::path& filePath);
+    // encrypt/decrypt file
+    void processFile(const std::filesystem::path& filePath);
 
     public:
     DirectoryDFS(const std::string& dirPath, const EncryptedText& et) : directoryPath(dirPath), encryptedText(et) {}
+
+    // start dfs on directory
     void performDFS();
 };
 

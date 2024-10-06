@@ -7,3 +7,6 @@ Requirements:
 
 To Compile
   .\build.ps1
+
+To run
+  .\dir-enc

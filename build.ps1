@@ -3,8 +3,11 @@ if (Test-Path -Path ".\build") {
     Remove-Item -Recurse -Force -Path ".\build"
 }
 
-# source files in this directory build files in build subdirectory
+# the source files are in this directory
+# the build files go in build subdirectory
 cmake -S . -B build
 
 # build project
 cmake --build build
+
+mv build\dir-enc.exe dir-enc.exe

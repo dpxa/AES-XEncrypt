@@ -1,6 +1,3 @@
-tests
 .vscode
 build
-cipher.txt
-encrypted.txt
-output.txt
+dir-enc.exe

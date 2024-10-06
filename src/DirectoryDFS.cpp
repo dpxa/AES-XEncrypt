@@ -2,29 +2,30 @@
 #include <iostream>
 
 void DirectoryDFS::performDFS() {
-    if (!encryptedText.customKey()) {
-        std::string keyFilePath;
-        std::cout << "No custom key created. Please enter the path to save the encryption key: ";
-        std::getline(std::cin, keyFilePath);
-        encryptedText.saveKeyToFile(keyFilePath);
-    }
-
     std::filesystem::path rootPath(directoryPath);
 
+    // no recursion if root is a file
     if (std::filesystem::is_regular_file(rootPath)) {
-        mutateFile(rootPath);
+        processFile(rootPath);
+    // recursion if root is a directory
+    // a;ready made sure rootPath is a file or directory in main
     } else {
         for (const auto& entry : std::filesystem::recursive_directory_iterator(rootPath)) {
             if (entry.is_regular_file()) {
+
+                // output each files full name
                 std::cout << entry.path().string() << std::endl;
-                mutateFile(entry.path());
+                processFile(entry.path());
             }
         }
     }
 }
 
-void DirectoryDFS::mutateFile(const std::filesystem::path& filePath) {
+void DirectoryDFS::processFile(const std::filesystem::path& filePath) {
+    // read in entire contents of file into encryptedText
     encryptedText.setText(filePath.string());
+    // process the text
     (encryptedText.encrypted()) ? encryptedText.decrypt() : encryptedText.encrypt();
-    encryptedText.saveToFile(filePath.string());
+    // write the processed text to the same file
+    encryptedText.saveTextToFile(filePath.string());
 }
