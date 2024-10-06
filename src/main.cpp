@@ -1,26 +1,72 @@
 #include "../header/Encrypted.h"
 #include <iostream>
+#include <filesystem>
+#include <algorithm>
+
+// For directories or files
+std::string getValidPath(const std::string& prompt) {
+    std::string path;
+    while (true) {
+        std::cout << prompt;
+        std::getline(std::cin, path);
+        if (std::filesystem::is_regular_file(path) || std::filesystem::is_directory(path)) {
+            std::cout << "Valid path" << std::endl;
+            return path;
+        } else {
+            std::cout << "Invalid path. Please try again." << std::endl;
+        }
+    }
+}
+
+// For files only
+std::string getValidFilePath(const std::string& prompt) {
+    std::string path;
+    while (true) {
+        std::cout << prompt;
+        std::getline(std::cin, path);
+        if (std::filesystem::is_regular_file(path)) {
+            std::cout << "Valid file" << std::endl;
+            return path;
+        } else {
+            std::cout << "Invalid file path. Please try again." << std::endl;
+        }
+    }
+}
+
+bool askYesNo(const std::string& prompt) {
+    std::string response;
+    while (true) {
+        std::cout << prompt;
+        std::getline(std::cin, response);
+        std::transform(response.begin(), response.end(), response.begin(), ::tolower);
+        if (response == "yes") return true;
+        if (response == "no") return false;
+        std::cout << "Invalid response. Please enter 'yes' or 'no'." << std::endl;
+    }
+}
 
 int main() {
     try {
-        std::string file;
-        std::cout << "Enter file to encrypt: ";
-        std::getline(std::cin, file);
+        EncryptedText encryptedText;
 
-        // Read text from the file and create an EncryptedText object
-        EncryptedText encryptedData(file, false);
-        encryptedData.encrypt();  // Renamed from encrypt
-        encryptedData.saveToFile("encrypted.txt");
-        std::cout << "Encrypted data saved to encrypted.txt.\n";
+        // Get file or directory path
+        std::string path = getValidPath("Enter a file or directory path: ");
 
-        // Decrypt the data and save the output
-        encryptedData.decrypt();  // Renamed from decrypt
-        encryptedData.saveToFile("output.txt");
-        std::cout << "Decrypted data saved to output.txt.\n";
+        // Ask about keyfile
+        bool hasKeyfile = askYesNo("Is there a keyfile for this path? (yes, no): ");
 
-        // Save the cipher key
-        encryptedData.saveKeyToFile("cipher.txt");
-        std::cout << "Cipher key saved to cipher.txt.\n";
+        if (hasKeyfile) {
+            std::string keyfile = getValidFilePath("Enter path to keyfile: ");
+            bool isEncrypted = askYesNo("Is this path encrypted? (yes, no): ");
+
+            encryptedText.setKeyAndState(keyfile, isEncrypted);
+        } else {
+            encryptedText.generateKey();
+        }
+
+    } catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "Filesystem error: " << e.what() << '\n';
+        return EXIT_FAILURE;
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << '\n';
         return EXIT_FAILURE;

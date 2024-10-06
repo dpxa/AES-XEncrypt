@@ -22,13 +22,9 @@ private:
 
 public:
     EncryptedText() = default;
-    EncryptedText(const std::string& filePath, bool encrypt);
-    EncryptedText(const std::string& keyFile);
-    EncryptedText(const std::string& filePath, const std::string& keyFile, bool encrypt);
 
-    void setTextAndState(const std::string& filePath, bool encrypt);
-    void setKeyFromFile(const std::string& keyFile);
-    void setAll(const std::string& filePath, const std::string& keyFile, bool encrypt);
+    void setText(const std::string& filePath);
+    void setKeyAndState(const std::string& keyFile, bool encrypt);
 
     void generateKey();
     void encrypt();

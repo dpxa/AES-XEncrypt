@@ -1,37 +1,10 @@
 #include "../header/Encrypted.h"
 
-EncryptedText::EncryptedText(const std::string& filePath, bool encrypt) : isEncrypted(encrypt) {
+void EncryptedText::setText(const std::string& filePath) {
     getTextFromFile(filePath);
-
-    if (!hasCustomKey)
-        generateKey();
 }
 
-EncryptedText::EncryptedText(const std::string& keyFile) : hasCustomKey(true) { 
-    getKeyFromFile(keyFile);
-}
-
-EncryptedText::EncryptedText(const std::string& filePath, const std::string& keyFile, bool encrypt) : hasCustomKey(true), isEncrypted(encrypt) {
-    getTextFromFile(filePath);
-    getKeyFromFile(keyFile);
-}
-
-void EncryptedText::setTextAndState(const std::string& filePath, bool encrypt) {
-    getTextFromFile(filePath);
-    isEncrypted = encrypt;
-
-    if (!hasCustomKey)
-        generateKey();
-}
-
-void EncryptedText::setKeyFromFile(const std::string& keyFile) {
-    getKeyFromFile(keyFile);
-    hasCustomKey = true;
-}
-
-// setter for text, key, and encryption state
-void EncryptedText::setAll(const std::string& filePath, const std::string& keyFile, bool encrypt) {
-    getTextFromFile(filePath);
+void EncryptedText::setKeyAndState(const std::string& keyFile, bool encrypt) {
     getKeyFromFile(keyFile);
     hasCustomKey = true;
     isEncrypted = encrypt;
