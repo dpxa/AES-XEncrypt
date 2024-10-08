@@ -8,7 +8,7 @@ void DirectoryDFS::performDFS() {
     if (std::filesystem::is_regular_file(rootPath)) {
         processFile(rootPath);
     // recursion if root is a directory
-    // a;ready made sure rootPath is a file or directory in main
+    // already made sure rootPath is a file or directory in main
     } else {
         for (const auto& entry : std::filesystem::recursive_directory_iterator(rootPath)) {
             if (entry.is_regular_file()) {
