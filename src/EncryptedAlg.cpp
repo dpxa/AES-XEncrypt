@@ -1,6 +1,10 @@
 #include "../header/Encrypted.h"
 #include <random>
 
+void EncryptedText::process() {
+    (encrypted) ? decrypt() : encrypt();
+}
+
 void EncryptedText::encrypt() {
     // current offset in cipher and position in text we are encrypting
     size_t ts = text.size();
@@ -13,13 +17,16 @@ void EncryptedText::encrypt() {
     size_t pos = key.startPosition % ts;
     
     for (size_t i = 0; i < ts; ++i) {
-        // get current character and manipulate it
         char& currentChar = text[pos];
-        currentChar = (currentChar + key.cipher[offset]) % 128;
+
+        // if character is ascii, encrypt it
+        if (static_cast<unsigned char>(currentChar) <= 127) {
+            currentChar = (currentChar + key.cipher[offset]) % 128;
+        }
         
-        // move to next position in cipher and text
-        offset = (offset + 1) % cs;
-        pos = (pos + 1) % ts;
+        // move to next position in cipher and text (no mod - mod operations are heavy)
+        if (++offset == cs) offset = 0;
+        if (++pos == ts) pos = 0;
     }
 }
 
@@ -35,13 +42,16 @@ void EncryptedText::decrypt() {
     size_t pos = key.startPosition % ts;
         
     for (size_t i = 0; i < ts; ++i) {
-        // get current character and manipulate it
         char& currentChar = text[pos];
-        currentChar = (currentChar - key.cipher[offset] + 128) % 128;
         
-        // move to next position in cipher and text
-        offset = (offset + 1) % cs;
-        pos = (pos + 1) % ts;
+        // if character is ascii, decrypt it
+        if (static_cast<unsigned char>(currentChar) <= 127) {
+            currentChar = (currentChar - key.cipher[offset] + 128) % 128;
+        }
+        
+        // move to next position in cipher and text (no mod - mod operations are heavy)
+        if (++offset == cs) offset = 0;
+        if (++pos == ts) pos = 0;
     }
 }
 

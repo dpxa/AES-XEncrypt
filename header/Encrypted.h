@@ -14,28 +14,25 @@ private:
     std::string text;
     EncryptionKey key;
 
-    bool isEncrypted = false;
+    bool encrypted = false;
 
     // characters that can be in the key
     const std::string characterSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
     const int keyCreationSize = 20;
-
-    // getTextFromFile and getKeyFromFile both call readFileToString
-    std::string readFileToString(std::ifstream& fin);
-    void getTextFromFile(const std::string& inputFile);
-    void getKeyFromFile(const std::string& inputFile);
 
 public:
     EncryptedText() = default;
 
     // setText called during each file reached in dfs
     void setText(const std::string& filePath);
+    // for validateKeyFile, it is set if it is valid (we need to check contents, not just file existance)
+    bool validateKeyFile(const std::string& inputFile);
+    void setState(bool encrypt);
 
-    // either key and state are given or not
-    void setKeyAndState(const std::string& keyFile, bool encrypt);
     void generateKey();
 
-    bool encrypted() { return isEncrypted; }
+    // decide whether to encrypt or decrypt text based on class member encrypted
+    void process();
 
     void encrypt();
     void decrypt();

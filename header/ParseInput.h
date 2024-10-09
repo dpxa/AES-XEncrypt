@@ -22,7 +22,7 @@ std::string getValidPath(const std::string& prompt) {
 }
 
 // for files only
-std::string getValidFilePath(const std::string& prompt) {
+void getValidKeyFile(const std::string& prompt, EncryptedText& encryptedText) {
     std::string path;
 
     while (true) {
@@ -30,8 +30,8 @@ std::string getValidFilePath(const std::string& prompt) {
         std::getline(std::cin, path);
 
         // if path is only a file
-        if (std::filesystem::is_regular_file(path))
-            return path;
+        if (encryptedText.validateKeyFile(path))
+            return;
         
         std::cout << "Invalid file path. Please try again." << std::endl;
     }

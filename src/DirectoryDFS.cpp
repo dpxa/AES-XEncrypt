@@ -25,7 +25,7 @@ void DirectoryDFS::processFile(const std::filesystem::path& filePath) {
     // read in entire contents of file into encryptedText
     encryptedText.setText(filePath.string());
     // process the text
-    (encryptedText.encrypted()) ? encryptedText.decrypt() : encryptedText.encrypt();
+    encryptedText.process();
     // write the processed text to the same file
     encryptedText.saveTextToFile(filePath.string());
 }

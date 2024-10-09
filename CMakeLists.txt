@@ -10,7 +10,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(dir-enc
     src/main.cpp 
     src/Encrypted.cpp 
-    src/EncryptedIO.cpp 
-    src/EncryptedOp.cpp
+    src/EncryptedAlg.cpp
     src/DirectoryDFS.cpp
 )

@@ -1,10 +1,79 @@
 #include "../header/Encrypted.h"
+#include <fstream>
+#include <sstream>
+#include <cctype>
 
-void EncryptedText::setText(const std::string& filePath) {
-    getTextFromFile(filePath);
+void EncryptedText::setText(const std::string& inputFile) {
+    // open file in binary mode, as characters will be ascii 0-127
+    std::ifstream fin(inputFile, std::ios::binary);
+    if (!fin)
+        // ideally should never be thrown, as we already checked if this is a regular file
+        throw std::runtime_error("Failed to open file.");
+    
+    // create output string stream
+    std::ostringstream oss;
+    // read the entire file buffer into the string stream
+    oss << fin.rdbuf();
+    // convert string stream to std::string
+    text = oss.str();
 }
 
-void EncryptedText::setKeyAndState(const std::string& keyFile, bool encrypt) {
-    getKeyFromFile(keyFile);
-    isEncrypted = encrypt;
+bool EncryptedText::validateKeyFile(const std::string& inputFile) {
+    std::ifstream fin(inputFile);
+    if (!fin)
+        return false;
+
+    std::string line;
+    // Check for "Key:" at the top (getline stops at '\n')
+    std::getline(fin, line);
+    if (line != "Key:") {
+        return false;
+    }
+
+    // Check for 20 random characters followed by 3 digits
+    std::string k;
+    char ch;
+    for (int i = 0; i < 23; ++i) {
+        if (fin.get(ch)) {
+            k += ch;
+            if (i >= 20 && !std::isdigit(ch)) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    // ensure there are no extra characters
+    char extra;
+    if (fin.get(extra)) {
+        return false;
+    }
+
+    // everything is correct, so extract key
+    key.cipher = k.substr(0, 20);
+    key.startPosition = std::stoi(k.substr(20, 3));
+
+    return true;
+}
+
+void EncryptedText::setState(bool encrypt) {
+    encrypted = encrypt;
+}
+
+void EncryptedText::saveTextToFile(const std::string& outputFile) const {
+    // if file cannot be opened in binary and is some other format (called during dfs)
+    std::ofstream fout(outputFile, std::ios::binary);
+    if (!fout)
+        throw std::runtime_error("Failed to open file for writing encrypted/decrypted text.");
+        
+    fout << text;
+}
+
+void EncryptedText::saveKeyToFile(const std::string& outputFile) const {
+    std::ofstream fout(outputFile);
+    if (!fout)
+        throw std::runtime_error("Failed to open file for writing cipher.");
+
+    fout << "Key:\n" << key.cipher << key.startPosition;
 }

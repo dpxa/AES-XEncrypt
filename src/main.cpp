@@ -7,6 +7,8 @@ int main() {
     std::cout << "| |_| |  __//  \\  / ___ \\ " << std::endl;
     std::cout << "|____/|_|  /_/\\_\\/_/   \\_\\" << std::endl << std::endl;
 
+    std::cout << "Only Ascii characters are encrypted. Non Ascii characters are skipped." << std::endl << std::endl;
+
     try {
         EncryptedText encryptedText;
 
@@ -15,10 +17,11 @@ int main() {
         std::string path = getValidPath("Enter a file or directory path: ");
 
         if (askYesNo("Is there a key for this path? (yes, no): ")) {
-            std::string keyfile = getValidFilePath("Enter path to key: ");
+            // if key is valid, it is automatically set (one pass through keyfile)
+            getValidKeyFile("Enter path to key: ", encryptedText);
             bool isEncrypted = askYesNo("Is this path encrypted? (yes, no): ");
 
-            encryptedText.setKeyAndState(keyfile, isEncrypted);
+            encryptedText.setState(isEncrypted);
         } else {
             encryptedText.generateKey();
             std::string keyFilePath = getValidParentDirectory("Please enter the path to save the encryption key: ");

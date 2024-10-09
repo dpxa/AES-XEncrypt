@@ -1,15 +1,24 @@
-v-directory-encryptor is a command-line tool designed to encrypt and decrypt files within a specified directory using a custom Vigenère cipher. This project provides a straightforward and secure method to protect sensitive data stored in directories, making it ideal for users who need to safeguard their files from unauthorized access.
+v-directory-encryptor is a command-line tool designed to encrypt or decrypt a file or all files within a specified directory and its subdirectories using a custom Vigenère cipher. This project provides a secure method to protect sensitive data stored in directories.
 
-DO NOT ENCRYPT FILES THAT MAY HAVE UNICODE CHARACTERS.
-NOT 
+Does not encrypt non ascii characters (skips over them).
+
 Encryption algorithm not safe to use.
 
 Requirements:
   CMake
-  Powershell for now
+
+Optional:
+  Powershell
 
 To Compile
-  .\build.ps1
+  with powershell:
+    .\build.ps1
+  without:
+    cmake -S . -B build
+    cmake --build build
 
 To run
-  .\dir-enc
+  with powershell:
+    .\dir-enc.exe
+  without:
+    .\build\dir-enc.exe
