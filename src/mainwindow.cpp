@@ -1,12 +1,15 @@
 #include "../header/mainwindow.h"
 #include "../ui/ui_mainwindow.h"
 #include <QMessageBox> // For displaying message boxes
+#include <QScrollBar>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->YesEnc->setEnabled(false);
+    ui->NoEnc->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -20,6 +23,8 @@ void MainWindow::on_valDirPath_clicked()
     if (ddfs.validatePath(path.toStdString())) {
         ui->statusbar->showMessage("Valid path: " + path);
         pathSet = true;
+        ui->YesEnc->setEnabled(pathSet && keySet);
+        ui->NoEnc->setEnabled(pathSet && keySet && !newKey);
     } else {
         ui->statusbar->showMessage("Invalid path: " + path);
         QMessageBox::warning(this, "Warning", "Invalid path entered!");
@@ -30,14 +35,14 @@ void MainWindow::on_valDirPath_clicked()
 void MainWindow::on_yesKey_clicked()
 {
     hasKey = true;
-    ui->statusbar->showMessage("A key is present for this path.");
+    ui->statusbar->showMessage("A key file must be provided for this path.");
 }
 
 
 void MainWindow::on_noKey_clicked()
 {
     hasKey = false;
-    ui->statusbar->showMessage("A key needs to be made.");
+    ui->statusbar->showMessage("No key file found. A new key file will be generated.");
 }
 
 
@@ -49,6 +54,9 @@ void MainWindow::on_dirKeyPath_clicked()
         if (encryptedText.validateKeyFile(keyPath.toStdString())) {
             ui->statusbar->showMessage("Valid key path: " + keyPath);
             keySet = true;
+            newKey = false;
+            ui->YesEnc->setEnabled(pathSet && keySet);
+            ui->NoEnc->setEnabled(pathSet && keySet && !newKey);
         } else {
             ui->statusbar->showMessage("Invalid key path: " + keyPath);
             QMessageBox::warning(this, "Warning", "Invalid key path entered!");
@@ -58,6 +66,8 @@ void MainWindow::on_dirKeyPath_clicked()
             ui->statusbar->showMessage("Valid key path: " + keyPath);
             keySet = true;
             newKey = true;
+            ui->YesEnc->setEnabled(pathSet && keySet);
+            ui->NoEnc->setEnabled(pathSet && keySet && !newKey);
         } else {
             ui->statusbar->showMessage("Invalid key path: " + keyPath);
             QMessageBox::warning(this, "Warning", "Invalid key path entered!");
@@ -68,36 +78,27 @@ void MainWindow::on_dirKeyPath_clicked()
 
 void MainWindow::on_YesEnc_clicked()
 {
-    if (pathSet && keySet) {
-        encryptedText.setState(true);
-        ui->statusbar->showMessage("Encrypting...");
-        ddfs.setEncrypted(encryptedText);
-        ddfs.performDFS();
-        ui->statusbar->showMessage("Encryption done!");
+    encryptedText.setState(true);
+    ui->fileNames->clear();
+    ui->statusbar->showMessage("Encrypting...");
+    ddfs.setEncrypted(encryptedText);
+    ddfs.performDFS(ui->fileNames);
+    ui->statusbar->showMessage("Encryption done!");
+
+    if (!newKey) {
         newKey = false;
+        ui->NoEnc->setEnabled(pathSet && keySet && !newKey);
     }
 }
 
 
 void MainWindow::on_NoEnc_clicked()
 {
-    if (newKey) {
-        ui->statusbar->showMessage("Cannot decrypt file with new key");
-        QMessageBox::warning(this, "Warning", "Cannot decrypt file with new key");
-    } else if (pathSet && keySet) {
-        encryptedText.setState(false);
-        ui->statusbar->showMessage("Decrypting...");
-        ddfs.setEncrypted(encryptedText);
-        ddfs.performDFS();
-        ui->statusbar->showMessage("Decryption done!");
-    } else if (!pathSet && !keySet) {
-        ui->statusbar->showMessage("Path and key not set");
-        QMessageBox::warning(this, "Warning", "Path and key not set");
-    } else if (pathSet) {
-        ui->statusbar->showMessage("Key not set");
-        QMessageBox::warning(this, "Warning", "Key not set");
-    } else {
-        ui->statusbar->showMessage("Path not set");
-        QMessageBox::warning(this, "Warning", "Path not set");
-    }
+    encryptedText.setState(false);
+    ui->fileNames->clear();
+    ui->statusbar->showMessage("Decrypting...");
+    ddfs.setEncrypted(encryptedText);
+    ddfs.performDFS(ui->fileNames);
+    ui->statusbar->showMessage("Decryption done!");
 }
+

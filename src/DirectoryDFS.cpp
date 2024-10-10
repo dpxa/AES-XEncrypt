@@ -12,19 +12,20 @@ void DirectoryDFS::setEncrypted(const EncryptedText& et) {
     encryptedText = et;
 }
 
-void DirectoryDFS::performDFS() {
+void DirectoryDFS::performDFS(QListWidget* fileListWidget) {
     std::filesystem::path rootPath(directoryPath);
 
     // no recursion if root is a file
     if (std::filesystem::is_regular_file(rootPath)) {
         processFile(rootPath);
+        fileListWidget->addItem(QString::fromStdString(rootPath.string()));
     // recursion if root is a directory
     // already made sure rootPath is a file or directory in main
     } else {
         for (const auto& entry : std::filesystem::recursive_directory_iterator(rootPath)) {
             if (entry.is_regular_file()) {
-
                 processFile(entry.path());
+                fileListWidget->addItem(QString::fromStdString(entry.path().string()));
             }
         }
     }

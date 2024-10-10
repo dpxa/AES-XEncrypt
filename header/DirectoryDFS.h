@@ -3,6 +3,7 @@
 
 #include "Encrypted.h"
 #include <filesystem>
+#include <QListWidget>
 
 class DirectoryDFS {
     private:
@@ -19,7 +20,7 @@ class DirectoryDFS {
     void setEncrypted(const EncryptedText& et);
 
     // start dfs on directory
-    void performDFS();
+    void performDFS(QListWidget* fileListWidget);
 };
 
 #endif
