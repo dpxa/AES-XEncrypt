@@ -62,9 +62,8 @@ bool EncryptedText::validateKeyFile(const std::string& inputFile) {
 
 bool EncryptedText::createKeyFile(const std::string& inputFile) {
     std::filesystem::path filePath(inputFile);
-    std::filesystem::path absPath = std::filesystem::absolute(inputFile);
 
-    if (!std::filesystem::is_directory(absPath.parent_path()))
+    if (!std::filesystem::is_directory(filePath.parent_path()))
         return false;
         
     generateKey();
