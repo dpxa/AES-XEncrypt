@@ -1,5 +1,16 @@
 #include "../header/DirectoryDFS.h"
-#include <iostream>
+
+bool DirectoryDFS::validatePath(const std::string& filePath) {
+    if (!std::filesystem::is_regular_file(filePath) && !std::filesystem::is_directory(filePath))
+        return false;
+    
+    directoryPath = filePath;
+    return true;
+}
+
+void DirectoryDFS::setEncrypted(const EncryptedText& et) {
+    encryptedText = et;
+}
 
 void DirectoryDFS::performDFS() {
     std::filesystem::path rootPath(directoryPath);
@@ -13,8 +24,6 @@ void DirectoryDFS::performDFS() {
         for (const auto& entry : std::filesystem::recursive_directory_iterator(rootPath)) {
             if (entry.is_regular_file()) {
 
-                // output each files full name
-                std::cout << entry.path().string() << std::endl;
                 processFile(entry.path());
             }
         }

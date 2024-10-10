@@ -6,52 +6,47 @@
 #include <algorithm>    // std::transform
 
 // for directories or files
-std::string getValidPath(const std::string& prompt) {
+void getValidPath( DirectoryDFS& ddfs) {
     std::string path;
 
     while (true) {
-        std::cout << prompt;
+        std::cout << "Enter a file or directory path to encrypt: ";
         std::getline(std::cin, path);
 
         // if path is a file or directory
-        if (std::filesystem::is_regular_file(path) || std::filesystem::is_directory(path))
-            return path;
+        if (ddfs.validatePath(path))
+            break;
         
         std::cout << "Invalid path. Please try again." << std::endl;
     }
 }
 
 // for files only
-void getValidKeyFile(const std::string& prompt, EncryptedText& encryptedText) {
+void getValidKeyFile(EncryptedText& encryptedText) {
     std::string path;
 
     while (true) {
-        std::cout << prompt;
+        std::cout << "Enter path to the key: ";
         std::getline(std::cin, path);
 
         // if path is only a file
         if (encryptedText.validateKeyFile(path))
-            return;
+            break;
         
-        std::cout << "Invalid file path. Please try again." << std::endl;
+        std::cout << "Invalid path/key format. Please try again." << std::endl;
     }
 }
 
-// for validating parent directory
-std::string getValidParentDirectory(const std::string& prompt) {
+void getCreatedKeyFile(EncryptedText& encryptedText) {
     std::string path;
 
     while (true) {
-        std::cout << prompt;
+        std::cout << "Enter path to put the key: ";
         std::getline(std::cin, path);
 
-        std::filesystem::path filePath(path);
-        std::filesystem::path absPath = std::filesystem::absolute(filePath);
-        std::filesystem::path parentDir = absPath.parent_path();
-
         // if path is only a file
-        if (std::filesystem::is_directory(parentDir))
-            return path;
+        if (encryptedText.createKeyFile(path))
+            break;
         
         std::cout << "Invalid file path. Please try again." << std::endl;
     }

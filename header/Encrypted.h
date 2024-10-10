@@ -16,9 +16,16 @@ private:
 
     bool encrypted = false;
 
+    // static const so EncryptedText can be a copyable class
     // characters that can be in the key
-    const std::string characterSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
-    const int keyCreationSize = 20;
+    static const std::string characterSet;
+    static const int keyCreationSize;
+
+    void generateKey();
+    void saveKeyToFile(const std::string& outputFile) const ;
+
+    void encrypt();
+    void decrypt();
 
 public:
     EncryptedText() = default;
@@ -27,18 +34,13 @@ public:
     void setText(const std::string& filePath);
     // for validateKeyFile, it is set if it is valid (we need to check contents, not just file existance)
     bool validateKeyFile(const std::string& inputFile);
+    bool createKeyFile(const std::string& inputFile);
     void setState(bool encrypt);
-
-    void generateKey();
 
     // decide whether to encrypt or decrypt text based on class member encrypted
     void process();
 
-    void encrypt();
-    void decrypt();
-
     void saveTextToFile(const std::string& outputFile) const;
-    void saveKeyToFile(const std::string& outputFile) const ;
 };
 
 #endif // ENCRYPTED_H

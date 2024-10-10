@@ -11,24 +11,20 @@ int main() {
 
     try {
         EncryptedText encryptedText;
+        DirectoryDFS ddfs;
 
         // get path -> ask if key exists -> if so, get path and encrypt status
         //                               -> else generate key
-        std::string path = getValidPath("Enter a file or directory path: ");
+        getValidPath(ddfs);
 
         if (askYesNo("Is there a key for this path? (yes, no): ")) {
-            // if key is valid, it is automatically set (one pass through keyfile)
-            getValidKeyFile("Enter path to key: ", encryptedText);
-            bool isEncrypted = askYesNo("Is this path encrypted? (yes, no): ");
-
-            encryptedText.setState(isEncrypted);
+            getValidKeyFile(encryptedText);
+            encryptedText.setState(askYesNo("Is this path encrypted? (yes, no): "));
         } else {
-            encryptedText.generateKey();
-            std::string keyFilePath = getValidParentDirectory("Please enter the path to save the encryption key: ");
-            encryptedText.saveKeyToFile(keyFilePath);
+            getCreatedKeyFile(encryptedText);
         }
-        
-        DirectoryDFS ddfs(path, encryptedText);
+
+        ddfs.setEncrypted(encryptedText);
         ddfs.performDFS();
 
     } catch (const std::exception& e) {

@@ -1,14 +1,17 @@
 #include "../header/Encrypted.h"
 #include <fstream>
 #include <sstream>
-#include <cctype>
+#include <filesystem>
+
+const std::string EncryptedText::characterSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+const int EncryptedText::keyCreationSize = 20;
 
 void EncryptedText::setText(const std::string& inputFile) {
     // open file in binary mode, as characters will be ascii 0-127
     std::ifstream fin(inputFile, std::ios::binary);
     if (!fin)
         // ideally should never be thrown, as we already checked if this is a regular file
-        throw std::runtime_error("Failed to open file.");
+        throw std::runtime_error("Failed to open file for reading text.");
     
     // create output string stream
     std::ostringstream oss;
@@ -54,6 +57,18 @@ bool EncryptedText::validateKeyFile(const std::string& inputFile) {
     key.cipher = k.substr(0, 20);
     key.startPosition = std::stoi(k.substr(20, 3));
 
+    return true;
+}
+
+bool EncryptedText::createKeyFile(const std::string& inputFile) {
+    std::filesystem::path filePath(inputFile);
+    std::filesystem::path absPath = std::filesystem::absolute(inputFile);
+
+    if (!std::filesystem::is_directory(absPath.parent_path()))
+        return false;
+        
+    generateKey();
+    saveKeyToFile(inputFile);
     return true;
 }
 
