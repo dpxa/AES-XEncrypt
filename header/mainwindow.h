@@ -21,15 +21,13 @@ public:
 private slots:
     void on_valDirPath_clicked();
 
-    void on_yesKey_clicked();
-
-    void on_noKey_clicked();
-
     void on_dirKeyPath_clicked();
 
-    void on_YesEnc_clicked();
+    void on_EncryptButton_clicked();
 
-    void on_NoEnc_clicked();
+    void on_DecryptButton_clicked();
+
+    void updateButtonColors();
 
 private:
     Ui::MainWindow *ui;

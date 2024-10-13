@@ -24,6 +24,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         header/DirectoryDFS.h header/Encrypted.h src/DirectoryDFS.cpp src/Encrypted.cpp src/EncryptedAlg.cpp
+        ui/resources.qrc
+        tests/bibles/bible1/bible.txt tests/bibles/bible1/encrypticon.png tests/bibles/bible1/fortnitemap.jpg tests/bibles/bible2/bible1/bible.txt tests/bibles/bible2/bible1/encrypticon.png tests/bibles/bible2/bible1/fortnitemap.jpg tests/bibles/bible2/bible.txt tests/bibles/bible2/encrypticon.png tests/bibles/bible2/fortnitemap.jpg tests/bibles/bible.txt tests/bibles/encrypticon.png tests/bibles/fortnitemap.jpg tests/bible.txt tests/encrypticon.png tests/fortnitemap.jpg
+        tests/bibles/bible1/bible.txt tests/bibles/bible1/encrypticon.png tests/bibles/bible1/fortnitemap.jpg tests/bibles/bible2/bible1/bible.txt tests/bibles/bible2/bible1/encrypticon.png tests/bibles/bible2/bible1/fortnitemap.jpg tests/bibles/bible2/bible.txt tests/bibles/bible2/encrypticon.png tests/bibles/bible2/fortnitemap.jpg tests/bibles/bible.txt tests/bibles/encrypticon.png tests/bibles/fortnitemap.jpg tests/bible.txt tests/encrypticon.png tests/fortnitemap.jpg
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET v-directory-encryptor APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

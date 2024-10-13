@@ -2,7 +2,7 @@
 #include <random>
 
 void EncryptedText::process() {
-    (encrypted) ? decrypt() : encrypt();
+    (doEncrypt) ? encrypt() : decrypt();
 }
 
 void EncryptedText::encrypt() {

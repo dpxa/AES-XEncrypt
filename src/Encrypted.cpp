@@ -60,19 +60,22 @@ bool EncryptedText::validateKeyFile(const std::string& inputFile) {
     return true;
 }
 
-bool EncryptedText::createKeyFile(const std::string& inputFile) {
+bool EncryptedText::newKey(const std::string& inputFile) {
     std::filesystem::path filePath(inputFile);
+    if (std::filesystem::is_directory(filePath)) {
+        return false;
+    }
 
     if (!std::filesystem::is_directory(filePath.parent_path()))
         return false;
-        
+
     generateKey();
-    saveKeyToFile(inputFile);
+    keyFile = inputFile;
     return true;
 }
 
 void EncryptedText::setState(bool encrypt) {
-    encrypted = encrypt;
+    doEncrypt = encrypt;
 }
 
 void EncryptedText::saveTextToFile(const std::string& outputFile) const {
@@ -84,10 +87,11 @@ void EncryptedText::saveTextToFile(const std::string& outputFile) const {
     fout << text;
 }
 
-void EncryptedText::saveKeyToFile(const std::string& outputFile) const {
-    std::ofstream fout(outputFile);
+void EncryptedText::saveKeyToFile() const {
+    std::ofstream fout(keyFile);
     if (!fout)
-        throw std::runtime_error("Failed to open file for writing cipher.");
+        // should never be reached
+        throw std::runtime_error("Failed to open file for writing encrypted/decrypted text.");
 
     fout << "Key:\n" << key.cipher << key.startPosition;
 }

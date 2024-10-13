@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>710</width>
-    <height>300</height>
+    <width>821</width>
+    <height>365</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,18 +18,22 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>710</width>
-    <height>300</height>
+    <width>821</width>
+    <height>365</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>16777215</width>
-    <height>300</height>
+    <width>821</width>
+    <height>365</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Directory Encryptor</string>
+   <string>Encryptor</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/encrypticon.png</normaloff>:/encrypticon.png</iconset>
   </property>
   <property name="iconSize">
    <size>
@@ -56,34 +60,27 @@
       <verstretch>0</verstretch>
      </sizepolicy>
     </property>
-    <property name="text">
-     <string>Enter File Path:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="haveKeyPrompt">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>70</y>
-      <width>371</width>
-      <height>20</height>
-     </rect>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <bold>false</bold>
+     </font>
     </property>
     <property name="text">
-     <string>Does the path have a key? (Yes/No)</string>
+     <string>Enter Full Path to File/Directory:</string>
     </property>
    </widget>
    <widget class="QLabel" name="whereKeyPrompt">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>140</y>
+      <y>80</y>
       <width>371</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Where is the key/Where should the new key be?</string>
+     <string>Enter Full Path to Key:</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="dirPath">
@@ -100,43 +97,17 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>170</y>
+      <y>110</y>
       <width>311</width>
       <height>31</height>
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="yesKey">
+   <widget class="QPushButton" name="EncryptButton">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>100</y>
-      <width>51</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Yes</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="noKey">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>100</y>
-      <width>51</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>No</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="YesEnc">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>230</y>
+      <y>300</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -148,11 +119,11 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="NoEnc">
+   <widget class="QPushButton" name="DecryptButton">
     <property name="geometry">
      <rect>
       <x>200</x>
-      <y>230</y>
+      <y>300</y>
       <width>181</width>
       <height>31</height>
      </rect>
@@ -171,29 +142,29 @@
      </rect>
     </property>
     <property name="text">
-     <string>Ok</string>
+     <string>Set</string>
     </property>
    </widget>
    <widget class="QPushButton" name="dirKeyPath">
     <property name="geometry">
      <rect>
       <x>330</x>
-      <y>170</y>
+      <y>110</y>
       <width>51</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Ok</string>
+     <string>Set</string>
     </property>
    </widget>
    <widget class="QListWidget" name="fileNames">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>10</y>
-      <width>311</width>
-      <height>251</height>
+      <x>400</x>
+      <y>9</y>
+      <width>411</width>
+      <height>321</height>
      </rect>
     </property>
     <property name="horizontalScrollBarPolicy">
@@ -206,13 +177,132 @@
      <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
     </property>
    </widget>
+   <widget class="QScrollArea" name="scrollAreaPath">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>180</y>
+      <width>371</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::Panel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Sunken</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
+    </property>
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="scrollAreaWidgetContents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>369</width>
+       <height>29</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QScrollArea" name="scrollAreaKeyPath">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>240</y>
+      <width>371</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::Panel</enum>
+    </property>
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="scrollAreaWidgetContents_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>369</width>
+       <height>29</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="showKeyPrompt">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>220</y>
+      <width>371</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Current Key Path:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="showPathPrompt">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>160</y>
+      <width>371</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string>Current Path:</string>
+    </property>
+    <property name="wordWrap">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="showPath">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>150</y>
+      <width>37</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="showKeyPath">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>210</y>
+      <width>37</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>710</width>
+     <width>821</width>
      <height>17</height>
     </rect>
    </property>
@@ -223,6 +313,8 @@
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
