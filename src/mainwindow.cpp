@@ -8,17 +8,22 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // disable buttons by default
     ui->EncryptButton->setEnabled(false);
     ui->DecryptButton->setEnabled(false);
     updateButtonColors();
 
-    ui->scrollAreaPath->setWidget(ui->showPath);
-    ui->scrollAreaKeyPath->setWidget(ui->showKeyPath);
+    showPath = new QLabel(this);
+    ui->scrollAreaDirPath->setWidget(showPath);
+    showKeyPath = new QLabel(this);
+    ui->scrollAreaKeyPath->setWidget(showKeyPath);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete showPath;
+    delete showKeyPath;
 }
 
 void MainWindow::updateButtonColors() {
@@ -36,16 +41,18 @@ void MainWindow::updateButtonColors() {
 }
 
 
-void MainWindow::on_valDirPath_clicked()
+void MainWindow::on_setDirPath_clicked()
 {
+    // get valid path
     QString path = ui->dirPath->text();
     bool isValidPath = ddfs.validatePath(path.toStdString());
 
     ui->statusbar->showMessage(isValidPath ? "Valid path." : "Invalid path.");
 
     if (isValidPath) {
+        // show vaid path
         pathSet = true;
-        ui->showPath->setText(path);
+        showPath->setText(path);
         ui->EncryptButton->setEnabled(keySet);
         ui->DecryptButton->setEnabled(keySet && !newKey);
         updateButtonColors();
@@ -54,40 +61,46 @@ void MainWindow::on_valDirPath_clicked()
     }
 }
 
-
-void MainWindow::on_dirKeyPath_clicked()
+void MainWindow::on_setKeyPath_clicked()
 {
+    // get valid key
     QString keyPath = ui->keyPath->text();
-    bool isValid = false;
+    std::string keyPathStr = keyPath.toStdString();
 
-    if (encryptedText.validateKeyFile(keyPath.toStdString())) {
+    EncryptedText::KeyFileStatus status = encryptedText.validateKeyFile(keyPathStr);
+
+    if (status == EncryptedText::KeyFileStatus::ValidKey) {
         ui->statusbar->showMessage("Valid path to key.");
         newKey = false;
-        isValid = true;
-    } else if (encryptedText.newKey(keyPath.toStdString())) {
-        ui->statusbar->showMessage("No valid key found - new key will be created.");
-        newKey = true;
-        isValid = true;
-    }
-
-    if (isValid) {
-        keySet = true;
-        ui->showKeyPath->setText(keyPath);
-        ui->EncryptButton->setEnabled(pathSet);
-        ui->DecryptButton->setEnabled(pathSet && !newKey);
-        updateButtonColors();
     } else {
-        ui->statusbar->showMessage("Invalid key path entered.");
-        QMessageBox::warning(this, "Warning", "Invalid key path entered.");
+        // attempt to create a new key
+        if (encryptedText.newKey(keyPathStr)) {
+            newKey = true;
+            if (status == EncryptedText::KeyFileStatus::InvalidKey) {
+                ui->statusbar->showMessage("File is present but no valid key found - new key will be created.");
+            } else {
+                ui->statusbar->showMessage("No valid file found - new key will be created.");
+            }
+        // if not valid key file, exit
+        } else {
+            ui->statusbar->showMessage("Invalid key path entered.");
+            QMessageBox::warning(this, "Warning", "Invalid key path entered.");
+            return;
+        }
     }
-}
 
+    // show valid key path
+    keySet = true;
+    showKeyPath->setText(keyPath);
+    ui->EncryptButton->setEnabled(pathSet);
+    ui->DecryptButton->setEnabled(pathSet && !newKey);
+    updateButtonColors();
+}
 void MainWindow::on_EncryptButton_clicked()
 {
+    // only save key file after first encrypt
     if (newKey) {
         newKey = false;
-        ui->DecryptButton->setEnabled(true);
-        updateButtonColors();
         encryptedText.saveKeyToFile();
     }
 
@@ -95,9 +108,14 @@ void MainWindow::on_EncryptButton_clicked()
     ui->statusbar->showMessage("Encrypting...");
 
     ddfs.setEncrypted(encryptedText);
-    ddfs.performDFS(ui->fileNames);
+    ddfs.performDFS(ui->fileNamesList);
 
     ui->statusbar->showMessage("Encryption done!");
+
+    // switch button states
+    ui->EncryptButton->setEnabled(false);
+    ui->DecryptButton->setEnabled(true);
+    updateButtonColors();
 }
 
 
@@ -107,7 +125,18 @@ void MainWindow::on_DecryptButton_clicked()
     ui->statusbar->showMessage("Decrypting...");
 
     ddfs.setEncrypted(encryptedText);
-    ddfs.performDFS(ui->fileNames);
+    ddfs.performDFS(ui->fileNamesList);
 
     ui->statusbar->showMessage("Decryption done!");
+
+    // switch button states
+    ui->DecryptButton->setEnabled(false);
+    ui->EncryptButton->setEnabled(true);
+    updateButtonColors();
 }
+
+void MainWindow::on_clearFileNamesList_clicked()
+{
+    ui->fileNamesList->clear();
+}
+

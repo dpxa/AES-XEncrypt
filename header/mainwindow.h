@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLabel>
 #include "DirectoryDFS.h"
 
 QT_BEGIN_NAMESPACE
@@ -19,22 +20,29 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_valDirPath_clicked();
-
-    void on_dirKeyPath_clicked();
-
     void on_EncryptButton_clicked();
 
     void on_DecryptButton_clicked();
 
-    void updateButtonColors();
+    void on_setDirPath_clicked();
+
+    void on_setKeyPath_clicked();
+
+    void on_clearFileNamesList_clicked();
 
 private:
+    void updateButtonColors();
+
     Ui::MainWindow *ui;
+
+    // labels for current path and key path (child of scrollBarArea)
+    QLabel *showPath;
+    QLabel *showKeyPath;
+
     DirectoryDFS ddfs;
     EncryptedText encryptedText;
-    bool hasKey = false;
-    bool newKey = false;
-    bool pathSet = false, keySet = false;
+
+    bool pathSet = false, keySet = false, newKey = false;
 };
+
 #endif // MAINWINDOW_H

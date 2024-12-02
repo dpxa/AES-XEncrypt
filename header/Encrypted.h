@@ -3,7 +3,7 @@
 #include <string>
 #include <QListWidget>
 
-// key has a cipher and an arbitrary starting position (not necessary)
+// key has a cipher and an arbitrary starting position
 struct EncryptionKey {
     std::string cipher;
     int startPosition = 0;
@@ -11,15 +11,13 @@ struct EncryptionKey {
 
 class EncryptedText {
 private:
-    // text to encrypt
     std::string text;
     EncryptionKey key;
+
     std::string keyFile;
 
-    bool doEncrypt = false;
+    bool encrypted = false;
 
-    // static const so EncryptedText can be a copyable class
-    // characters that can be in the key
     static const std::string characterSet;
     static const int keyCreationSize;
 
@@ -31,19 +29,27 @@ private:
 public:
     EncryptedText() = default;
 
-    // setText called during each file reached in dfs
-    void setText(const std::string& filePath);
-    // for validateKeyFile, it is set if it is valid (we need to check contents, not just file existance)
-    bool validateKeyFile(const std::string& inputFile);
-    bool newKey(const std::string& inputFile);
-    void setState(bool encrypt);
+    void setText(const std::string& file);
 
-    bool ifEncrypt() { return doEncrypt; }
+    // for validateKeyFile
+    enum class KeyFileStatus {
+        FileNotFound,
+        InvalidKey,
+        ValidKey
+    };
+    // set key to content of file and return code
+    KeyFileStatus validateKeyFile(const std::string& file);
 
-    // decide whether to encrypt or decrypt text based on class member encrypted
-    void process();
+    bool newKey(const std::string& file);
 
-    void saveTextToFile(const std::string& outputFile) const;
+    void setState(bool enc) { encrypted = enc; }
+    bool isEncrypted() { return encrypted; }
+
+    void process() { (encrypted) ? decrypt() : encrypt(); }
+
+    void saveTextToFile(const std::string& file) const;
+
+    // on first encrypt of new key
     void saveKeyToFile() const;
 };
 

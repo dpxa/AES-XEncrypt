@@ -7,20 +7,21 @@
 
 class DirectoryDFS {
     private:
-    std::string directoryPath;
+    std::string path;
     EncryptedText encryptedText;
 
-    // encrypt/decrypt file
     void processFile(const std::filesystem::path& filePath);
 
     public:
     DirectoryDFS() = default;
 
-    bool validatePath(const std::string& dirPath);
-    void setEncrypted(const EncryptedText& et);
+    // file or directory
+    bool validatePath(const std::string& path);
+
+    void setEncrypted(const EncryptedText& encText) { encryptedText = encText; }
 
     // start dfs on directory
     void performDFS(QListWidget* fileListWidget);
 };
 
-#endif
+#endif // DIRECTORYDFS_H

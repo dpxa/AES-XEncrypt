@@ -10,78 +10,70 @@ void EncryptedText::setText(const std::string& inputFile) {
     // open file in binary mode, as characters will be ascii 0-127
     std::ifstream fin(inputFile, std::ios::binary);
     if (!fin)
-        // ideally should never be thrown, as we already checked if this is a regular file
+        // should never be thrown - root file validated in ddfs
         throw std::runtime_error("Failed to open file for reading text.");
     
-    // create output string stream
     std::ostringstream oss;
-    // read the entire file buffer into the string stream
     oss << fin.rdbuf();
-    // convert string stream to std::string
     text = oss.str();
 }
 
-bool EncryptedText::validateKeyFile(const std::string& inputFile) {
+EncryptedText::KeyFileStatus EncryptedText::validateKeyFile(const std::string& inputFile) {
     std::ifstream fin(inputFile);
-    if (!fin)
-        return false;
-
-    std::string line;
-    // Check for "Key:" at the top (getline stops at '\n')
-    std::getline(fin, line);
-    if (line != "Key:") {
-        return false;
+    if (!fin) {
+        return KeyFileStatus::FileNotFound;
     }
 
-    // Check for 20 random characters followed by 3 digits
+    std::string line;
+    std::getline(fin, line);
+    if (line != "Key:") {
+        return KeyFileStatus::InvalidKey;
+    }
+
     std::string k;
     char ch;
     for (int i = 0; i < 23; ++i) {
         if (fin.get(ch)) {
             k += ch;
             if (i >= 20 && !std::isdigit(ch)) {
-                return false;
+                return KeyFileStatus::InvalidKey;
             }
         } else {
-            return false;
+            return KeyFileStatus::InvalidKey;
         }
     }
 
-    // ensure there are no extra characters
     char extra;
     if (fin.get(extra)) {
-        return false;
+        return KeyFileStatus::InvalidKey;
     }
 
-    // everything is correct, so extract key
     key.cipher = k.substr(0, 20);
     key.startPosition = std::stoi(k.substr(20, 3));
 
-    return true;
+    return KeyFileStatus::ValidKey;
 }
 
-bool EncryptedText::newKey(const std::string& inputFile) {
-    std::filesystem::path filePath(inputFile);
+bool EncryptedText::newKey(const std::string& file) {
+    std::filesystem::path filePath(file);
+    // check if the file can exist
     if (std::filesystem::is_directory(filePath)) {
         return false;
     }
 
-    if (!std::filesystem::is_directory(filePath.parent_path()))
+    if (!std::filesystem::is_directory(filePath.parent_path())) {
         return false;
+    }
 
     generateKey();
-    keyFile = inputFile;
+    keyFile = file;
     return true;
 }
 
-void EncryptedText::setState(bool encrypt) {
-    doEncrypt = encrypt;
-}
-
 void EncryptedText::saveTextToFile(const std::string& outputFile) const {
-    // if file cannot be opened in binary and is some other format (called during dfs)
     std::ofstream fout(outputFile, std::ios::binary);
     if (!fout)
+        // should never be thrown
         throw std::runtime_error("Failed to open file for writing encrypted/decrypted text.");
         
     fout << text;
@@ -90,7 +82,7 @@ void EncryptedText::saveTextToFile(const std::string& outputFile) const {
 void EncryptedText::saveKeyToFile() const {
     std::ofstream fout(keyFile);
     if (!fout)
-        // should never be reached
+        // should never be thrown
         throw std::runtime_error("Failed to open file for writing encrypted/decrypted text.");
 
     fout << "Key:\n" << key.cipher << key.startPosition;

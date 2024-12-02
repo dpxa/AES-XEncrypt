@@ -1,22 +1,16 @@
 #include "../header/Encrypted.h"
 #include <random>
 
-void EncryptedText::process() {
-    (doEncrypt) ? encrypt() : decrypt();
-}
-
 void EncryptedText::encrypt() {
-    // current offset in cipher and position in text we are encrypting
-    size_t ts = text.size();
-    // if text size is 0, there is nothing to encrypt (error when % 0)
-    if (ts == 0)
+    size_t text_size = text.size();
+    if (text_size == 0)
         return;
     
-    size_t cs = key.cipher.size();
+    size_t cipher_size = key.cipher.size();
     size_t offset = 0;
-    size_t pos = key.startPosition % ts;
+    size_t pos = key.startPosition % text_size;
     
-    for (size_t i = 0; i < ts; ++i) {
+    for (size_t i = 0; i < text_size; ++i) {
         char& currentChar = text[pos];
 
         // if character is ascii, encrypt it
@@ -24,24 +18,21 @@ void EncryptedText::encrypt() {
             currentChar = (currentChar + key.cipher[offset]) % 128;
         }
         
-        // move to next position in cipher and text (no mod - mod operations are heavy)
-        if (++offset == cs) offset = 0;
-        if (++pos == ts) pos = 0;
+        if (++offset == cipher_size) offset = 0;
+        if (++pos == text_size) pos = 0;
     }
 }
 
 void EncryptedText::decrypt() {
-    // current offset in cipher and position in text we are decrypting
-    size_t ts = text.size();
-    // if text size is 0, there is nothing to decrypt (error when % 0)
-    if (ts == 0)
+    size_t text_size = text.size();
+    if (text_size == 0)
         return;
     
-    size_t cs = key.cipher.size();
+    size_t cipher_size = key.cipher.size();
     size_t offset = 0;
-    size_t pos = key.startPosition % ts;
+    size_t pos = key.startPosition % text_size;
         
-    for (size_t i = 0; i < ts; ++i) {
+    for (size_t i = 0; i < text_size; ++i) {
         char& currentChar = text[pos];
         
         // if character is ascii, decrypt it
@@ -49,14 +40,12 @@ void EncryptedText::decrypt() {
             currentChar = (currentChar - key.cipher[offset] + 128) % 128;
         }
         
-        // move to next position in cipher and text (no mod - mod operations are heavy)
-        if (++offset == cs) offset = 0;
-        if (++pos == ts) pos = 0;
+        if (++offset == cipher_size) offset = 0;
+        if (++pos == text_size) pos = 0;
     }
 }
 
 void EncryptedText::generateKey() {
-    // create rng
     std::random_device rd;
     std::mt19937 rng(rd());
 
@@ -68,7 +57,7 @@ void EncryptedText::generateKey() {
     for (int i = 0; i < keyCreationSize; ++i)
         key.cipher += characterSet[charDistribution(rng)];
 
-    // uniform distribution over all three digit numbers (want starting position to be last 3 characters of key in file)
+    // uniform distribution over all three digit numbers (starting position)
     std::uniform_int_distribution<int> posDistribution(100, 999);
     key.startPosition = posDistribution(rng);
 }
