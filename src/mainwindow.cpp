@@ -101,10 +101,10 @@ void MainWindow::on_EncryptButton_clicked()
     // only save key file after first encrypt
     if (newKey) {
         newKey = false;
-        encryptedText.saveKeyToFile();
+        encryptedText.saveKey();
     }
 
-    encryptedText.setState(true);
+    encryptedText.setState(false);
     ui->statusbar->showMessage("Encrypting...");
 
     ddfs.setEncrypted(encryptedText);
@@ -121,7 +121,7 @@ void MainWindow::on_EncryptButton_clicked()
 
 void MainWindow::on_DecryptButton_clicked()
 {
-    encryptedText.setState(false);
+    encryptedText.setState(true);
     ui->statusbar->showMessage("Decrypting...");
 
     ddfs.setEncrypted(encryptedText);

@@ -1,63 +1,44 @@
 #include "../header/Encrypted.h"
+#include "../header/AesObject.h"
 #include <random>
 
 void EncryptedText::encrypt() {
-    size_t text_size = text.size();
-    if (text_size == 0)
-        return;
-    
-    size_t cipher_size = key.cipher.size();
-    size_t offset = 0;
-    size_t pos = key.startPosition % text_size;
-    
-    for (size_t i = 0; i < text_size; ++i) {
-        char& currentChar = text[pos];
+    AesObject aes;
 
-        // if character is ascii, encrypt it
-        if (static_cast<unsigned char>(currentChar) <= 127) {
-            currentChar = (currentChar + key.cipher[offset]) % 128;
-        }
-        
-        if (++offset == cipher_size) offset = 0;
-        if (++pos == text_size) pos = 0;
+    // padding - data size must be multiple of 16
+    aes.Pad(data);
+
+    uint8_t rks[aes.expKeySize];
+    aes.keyEx(key, rks);
+
+    size_t n = data.size();
+    for (size_t i = 0; i < n; i += 16) {
+        aes.encB(&data[i], rks);
     }
 }
 
 void EncryptedText::decrypt() {
-    size_t text_size = text.size();
-    if (text_size == 0)
-        return;
-    
-    size_t cipher_size = key.cipher.size();
-    size_t offset = 0;
-    size_t pos = key.startPosition % text_size;
-        
-    for (size_t i = 0; i < text_size; ++i) {
-        char& currentChar = text[pos];
-        
-        // if character is ascii, decrypt it
-        if (static_cast<unsigned char>(currentChar) <= 127) {
-            currentChar = (currentChar - key.cipher[offset] + 128) % 128;
-        }
-        
-        if (++offset == cipher_size) offset = 0;
-        if (++pos == text_size) pos = 0;
+    AesObject aes;
+
+    uint8_t rks[aes.expKeySize];
+    aes.keyEx(key, rks);
+
+    size_t n = data.size();
+    for (size_t i = 0; i < n; i += 16) {
+        aes.decB(&data[i], rks);
     }
+
+    aes.Unpad(data);
 }
 
 void EncryptedText::generateKey() {
     std::random_device rd;
     std::mt19937 rng(rd());
 
-    // uniform distribution over all indexes in characterSet
-    std::uniform_int_distribution<int> charDistribution(0, characterSet.size() - 1);
-    key.cipher.clear();
-    
-    // get random characters
-    for (int i = 0; i < keyCreationSize; ++i)
-        key.cipher += characterSet[charDistribution(rng)];
+    // 16 bytes with no bias
+    std::uniform_int_distribution<int> byteDistribution(0, 255);
 
-    // uniform distribution over all three digit numbers (starting position)
-    std::uniform_int_distribution<int> posDistribution(100, 999);
-    key.startPosition = posDistribution(rng);
+    for (int i = 0; i < AES_KEY_SIZE; ++i) {
+        key[i] = static_cast<uint8_t>(byteDistribution(rng));
+    }
 }
