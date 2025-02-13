@@ -80,7 +80,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Enter Full Path to Key:</string>
+     <string>Enter Full Path to Key/New Key:</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="dirPath">
