@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Encryptor</string>
+   <string>XEncrypt</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">

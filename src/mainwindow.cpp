@@ -105,7 +105,13 @@ void MainWindow::on_EncryptButton_clicked()
     }
 
     encryptedText.setState(false);
+    ui->EncryptButton->setEnabled(false);
+    ui->DecryptButton->setEnabled(false);
+    ui->setDirPath->setEnabled(false);
+    ui->setKeyPath->setEnabled(false);
     ui->statusbar->showMessage("Encrypting...");
+    updateButtonColors();
+    QCoreApplication::processEvents();
 
     ddfs.setEncrypted(encryptedText);
     ddfs.performDFS(ui->fileNamesList);
@@ -113,8 +119,9 @@ void MainWindow::on_EncryptButton_clicked()
     ui->statusbar->showMessage("Encryption done!");
 
     // switch button states
-    ui->EncryptButton->setEnabled(false);
     ui->DecryptButton->setEnabled(true);
+    ui->setDirPath->setEnabled(true);
+    ui->setKeyPath->setEnabled(true);
     updateButtonColors();
 }
 
@@ -123,6 +130,12 @@ void MainWindow::on_DecryptButton_clicked()
 {
     encryptedText.setState(true);
     ui->statusbar->showMessage("Decrypting...");
+    ui->EncryptButton->setEnabled(false);
+    ui->DecryptButton->setEnabled(false);
+    ui->setDirPath->setEnabled(false);
+    ui->setKeyPath->setEnabled(false);
+    updateButtonColors();
+    QCoreApplication::processEvents();
 
     ddfs.setEncrypted(encryptedText);
     ddfs.performDFS(ui->fileNamesList);
@@ -130,8 +143,9 @@ void MainWindow::on_DecryptButton_clicked()
     ui->statusbar->showMessage("Decryption done!");
 
     // switch button states
-    ui->DecryptButton->setEnabled(false);
     ui->EncryptButton->setEnabled(true);
+    ui->setDirPath->setEnabled(true);
+    ui->setKeyPath->setEnabled(true);
     updateButtonColors();
 }
 

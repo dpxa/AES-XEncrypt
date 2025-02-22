@@ -2,6 +2,7 @@
 #define AES_OBJECT
 #include <cstdint>
 #include <vector>
+#include "Encrypted.h"
 
 using byte = uint8_t;
 
@@ -10,7 +11,7 @@ public:
     static constexpr int expKeySize = 240;
     static constexpr int rounds = 14;
 
-    void keyEx(const byte key[16], byte rks[expKeySize]);
+    void keyEx(const byte key[AES_KEY_SIZE], byte rks[expKeySize]);
     void encB(byte b[16], const byte rks[expKeySize]);
     void decB(byte b[16], const byte rks[expKeySize]);
     void addRoundKey(byte st[16], const byte rk[16]);

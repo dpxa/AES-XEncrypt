@@ -1,4 +1,6 @@
 #include "../header/DirectoryDFS.h"
+#include <QCoreApplication>
+#include <QDateTime>
 
 bool DirectoryDFS::validatePath(const std::string& path) {
     if (!std::filesystem::is_regular_file(path) && !std::filesystem::is_directory(path))
@@ -20,7 +22,12 @@ void DirectoryDFS::performDFS(QListWidget* fileListWidget) {
         for (const auto& entry : std::filesystem::recursive_directory_iterator(root)) {
             if (entry.is_regular_file()) {
                 processFile(entry.path());
-                fileListWidget->insertItem(0, QString::fromStdString(encStatus + entry.path().string()));
+                fileListWidget->insertItem(0, QString::fromStdString(
+                                                QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss").toStdString() + "   " +
+                                                encStatus +
+                                                entry.path().string()
+                                                ));
+                QCoreApplication::processEvents();
             }
         }
     }
