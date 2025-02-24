@@ -1,5 +1,4 @@
 #include "../header/DirectoryDFS.h"
-#include <QCoreApplication>
 #include <QDateTime>
 
 bool DirectoryDFS::validatePath(const std::string& path) {
@@ -10,24 +9,26 @@ bool DirectoryDFS::validatePath(const std::string& path) {
     return true;
 }
 
-void DirectoryDFS::performDFS(QListWidget* fileListWidget) {
+void DirectoryDFS::performDFS(std::function<void(const QString&)> fileCallback) {
     std::filesystem::path root(path);
-
+    // get rid of / after base
+    int rootPathLen = root.parent_path().string().length() + 1;
+    
     std::string encStatus = encryptedText.isEncrypted() ? "Decrypted:   " : "Encrypted:   ";
 
     if (std::filesystem::is_regular_file(root)) {
         processFile(root);
-        fileListWidget->insertItem(0, QString::fromStdString(encStatus + root.string()));
+        QString msg = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") +
+                      "   " + QString::fromStdString(encStatus + root.string().substr(rootPathLen));
+        fileCallback(msg);
     } else {
         for (const auto& entry : std::filesystem::recursive_directory_iterator(root)) {
             if (entry.is_regular_file()) {
                 processFile(entry.path());
-                fileListWidget->insertItem(0, QString::fromStdString(
-                                                QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss").toStdString() + "   " +
-                                                encStatus +
-                                                entry.path().string()
-                                                ));
-                QCoreApplication::processEvents();
+
+                QString msg = QDateTime::currentDateTime().toString("HH:mm:ss") +
+                              "   " + QString::fromStdString(encStatus + entry.path().string().substr(rootPathLen));
+                fileCallback(msg);
             }
         }
     }

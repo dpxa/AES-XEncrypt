@@ -21,7 +21,7 @@ class DirectoryDFS {
     void setEncrypted(const EncryptedText& encText) { encryptedText = encText; }
 
     // start dfs on directory
-    void performDFS(QListWidget* fileListWidget);
+    void performDFS(std::function<void(const QString&)> fileCallback);
 };
 
 #endif // DIRECTORYDFS_H

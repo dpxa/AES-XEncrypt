@@ -1,3 +1,6 @@
+$Folder1 = ".\test_files\encrypt_test"
+$Folder2 = ".\test_files\expected"
+
 function Get-FileHashTable {
     param ($FolderPath)
     $hashTable = @{}
@@ -13,9 +16,6 @@ function Get-FileHashTable {
     
     return $hashTable
 }
-
-$Folder1 = "test_files"
-$Folder2 = "test_files_cmp"
 
 $HashTable1 = Get-FileHashTable -FolderPath $Folder1
 $HashTable2 = Get-FileHashTable -FolderPath $Folder2

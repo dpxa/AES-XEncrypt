@@ -1,6 +1,8 @@
 #include "../header/mainwindow.h"
 #include "../ui/ui_mainwindow.h"
-#include <QMessageBox> // For displaying message boxes
+#include "../header/EncryptionThread.h"
+#include <QMessageBox>
+#include <QThread>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -96,61 +98,98 @@ void MainWindow::on_setKeyPath_clicked()
     ui->DecryptButton->setEnabled(pathSet && !newKey);
     updateButtonColors();
 }
+
 void MainWindow::on_EncryptButton_clicked()
 {
-    // only save key file after first encrypt
+    // save key file if needed
     if (newKey) {
         newKey = false;
         encryptedText.saveKey();
     }
 
     encryptedText.setState(false);
+
     ui->EncryptButton->setEnabled(false);
     ui->DecryptButton->setEnabled(false);
     ui->setDirPath->setEnabled(false);
     ui->setKeyPath->setEnabled(false);
     ui->statusbar->showMessage("Encrypting...");
     updateButtonColors();
-    QCoreApplication::processEvents();
+
+    // return to UI thread to update file list
+    auto fileCallback = [this](const QString &msg) {
+        QMetaObject::invokeMethod(ui->fileNamesList, [this, msg]() {
+            ui->fileNamesList->insertItem(0, msg);
+        }, Qt::QueuedConnection);
+    };
+
+    // new thread and worker
+    QThread *thread = new QThread;
+    EncryptionWorker *worker = new EncryptionWorker(&ddfs, &encryptedText, fileCallback);
+    worker->moveToThread(thread);
+
+    connect(thread, &QThread::started, worker, &EncryptionWorker::process);
+
+    connect(worker, &EncryptionWorker::finished, this, [=]() {
+        ui->statusbar->showMessage("Encryption done!");
+        ui->DecryptButton->setEnabled(true);
+        ui->setDirPath->setEnabled(true);
+        ui->setKeyPath->setEnabled(true);
+        updateButtonColors();
+    });
+
+    // stop and delete thread when worker done
+    connect(worker, &EncryptionWorker::finished, thread, &QThread::quit);
+    connect(thread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
 
     ddfs.setEncrypted(encryptedText);
-    ddfs.performDFS(ui->fileNamesList);
-
-    ui->statusbar->showMessage("Encryption done!");
-
-    // switch button states
-    ui->DecryptButton->setEnabled(true);
-    ui->setDirPath->setEnabled(true);
-    ui->setKeyPath->setEnabled(true);
-    updateButtonColors();
+    thread->start();
 }
-
 
 void MainWindow::on_DecryptButton_clicked()
 {
     encryptedText.setState(true);
-    ui->statusbar->showMessage("Decrypting...");
+
     ui->EncryptButton->setEnabled(false);
     ui->DecryptButton->setEnabled(false);
     ui->setDirPath->setEnabled(false);
     ui->setKeyPath->setEnabled(false);
+    ui->statusbar->showMessage("Decrypting...");
     updateButtonColors();
-    QCoreApplication::processEvents();
+
+    // return to UI thread to update file list
+    auto fileCallback = [this](const QString &msg) {
+        QMetaObject::invokeMethod(ui->fileNamesList, [this, msg]() {
+            ui->fileNamesList->insertItem(0, msg);
+        }, Qt::QueuedConnection);
+    };
+
+    // new thread and worker
+    QThread *thread = new QThread;
+    EncryptionWorker *worker = new EncryptionWorker(&ddfs, &encryptedText, fileCallback);
+    worker->moveToThread(thread);
+
+    connect(thread, &QThread::started, worker, &EncryptionWorker::process);
+
+    connect(worker, &EncryptionWorker::finished, this, [=]() {
+        ui->statusbar->showMessage("Decryption done!");
+        ui->EncryptButton->setEnabled(true);
+        ui->setDirPath->setEnabled(true);
+        ui->setKeyPath->setEnabled(true);
+        updateButtonColors();
+    });
+
+    // stop and delete thread when worker done
+    connect(worker, &EncryptionWorker::finished, thread, &QThread::quit);
+    connect(thread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
 
     ddfs.setEncrypted(encryptedText);
-    ddfs.performDFS(ui->fileNamesList);
-
-    ui->statusbar->showMessage("Decryption done!");
-
-    // switch button states
-    ui->EncryptButton->setEnabled(true);
-    ui->setDirPath->setEnabled(true);
-    ui->setKeyPath->setEnabled(true);
-    updateButtonColors();
+    thread->start();
 }
 
 void MainWindow::on_clearFileNamesList_clicked()
 {
     ui->fileNamesList->clear();
 }
-

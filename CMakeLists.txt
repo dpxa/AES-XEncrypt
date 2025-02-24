@@ -26,6 +26,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/AesObject.h header/DirectoryDFS.h header/Encrypted.h header/mainwindow.h
         src/AesObject.cpp src/DirectoryDFS.cpp src/Encrypted.cpp src/EncryptedAlg.cpp src/main.cpp src/mainwindow.cpp
         ui/encrypticon.png ui/mainwindow.ui ui/resources.qrc
+        header/EncryptionThread.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET AES-256-XEncrypt APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
