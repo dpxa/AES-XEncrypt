@@ -17,7 +17,7 @@ It was built to practice file and directory encryption, UI design, and multithre
 - **Files and Recursive Directories:** Supports any type of file structure.
 - **Multithreaded Performance:** Isolates and speeds up encryption process.
 - **Cross-Platform:** Works on multiple operating systems (Qt framework)
-- **User-Friendly UI:**
+- **User-Friendly UI**
 
 ---
 
