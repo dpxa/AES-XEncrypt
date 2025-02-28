@@ -6,19 +6,18 @@
 
 ## Overview
 
-AES-256-XEncrypt is an encryption tool that encrypts files and directory structures using the AES-256 algorithm.
-It is built to practice file and directory encryption, user-friendly UI design, and multithreaded task handling.
+AES-256-XEncrypt is an tool that encrypts files and directory structures using the AES-256 algorithm.
+It was built to practice file and directory encryption, UI design, and multithreaded task handling.
 
 ---
 
 ## Features
 
 - **AES-256:** Highest security possible.
-- **Files and Directories:** Supports individual files and entire directories.
-- **Recursive:** Encrypts all files in subdirectories of given directory.
-- **User-Friendly UI:** Easy to use interface.
-- **Multithreaded Performance:** Implements multithreading to isolate and speed up encryption process.
-- **Cross-Platform:** Works on multiple operating systems.
+- **Files and Recursive Directories:** Supports any type of file structure.
+- **Multithreaded Performance:** Isolates and speeds up encryption process.
+- **Cross-Platform:** Works on multiple operating systems (Qt framework)
+- **User-Friendly UI:**
 
 ---
 

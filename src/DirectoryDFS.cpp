@@ -18,7 +18,7 @@ void DirectoryDFS::performDFS(std::function<void(const QString&)> fileCallback) 
 
     if (std::filesystem::is_regular_file(root)) {
         processFile(root);
-        QString msg = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") +
+        QString msg = QDateTime::currentDateTime().toString("HH:mm:ss") +
                       "   " + QString::fromStdString(encStatus + root.string().substr(rootPathLen));
         fileCallback(msg);
     } else {
