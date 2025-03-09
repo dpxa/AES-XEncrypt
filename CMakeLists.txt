@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(AES-256-XEncrypt VERSION 0.1 LANGUAGES CXX)
+project(AES-XEncrypt VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -20,7 +20,7 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(AES-256-XEncrypt
+    qt_add_executable(AES-XEncrypt
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         header/AesObject.h header/DirectoryDFS.h header/Encrypted.h header/mainwindow.h
@@ -29,32 +29,32 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/EncryptionThread.h
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET AES-256-XEncrypt APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET AES-XEncrypt APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
-        add_library(AES-256-XEncrypt SHARED
+        add_library(AES-XEncrypt SHARED
             ${PROJECT_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(AES-256-XEncrypt
+        add_executable(AES-XEncrypt
             ${PROJECT_SOURCES}
         )
     endif()
 endif()
 
-target_link_libraries(AES-256-XEncrypt PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(AES-XEncrypt PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.AES-256-XEncrypt)
+  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.AES-XEncrypt)
 endif()
-set_target_properties(AES-256-XEncrypt PROPERTIES
+set_target_properties(AES-XEncrypt PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -63,12 +63,12 @@ set_target_properties(AES-256-XEncrypt PROPERTIES
 )
 
 include(GNUInstallDirs)
-install(TARGETS AES-256-XEncrypt
+install(TARGETS AES-XEncrypt
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(AES-256-XEncrypt)
+    qt_finalize_executable(AES-XEncrypt)
 endif()

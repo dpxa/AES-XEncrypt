@@ -6,13 +6,13 @@
 #include <QListWidget>
 
 class DirectoryDFS {
-    private:
+private:
     std::string path;
     EncryptedText encryptedText;
 
     void processFile(const std::filesystem::path& filePath);
 
-    public:
+public:
     DirectoryDFS() = default;
 
     // file or directory

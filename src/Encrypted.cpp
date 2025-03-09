@@ -24,7 +24,6 @@ EncryptedText::KeyFileStatus EncryptedText::validateKeyFile(const std::string &i
     std::ifstream fin(inputFile, std::ios::binary);
     if (!fin)
     {
-        fin.close();
         return KeyFileStatus::FileNotFound;
     }
 
@@ -88,7 +87,7 @@ void EncryptedText::saveData(const std::string& outputFile) const {
 void EncryptedText::saveKey() const {
     std::ofstream fout(keyFile, std::ios::binary);
     if (!fout)
-        throw std::runtime_error("Failed to open file for writing encrypted/decrypted text.");
+        throw std::runtime_error("Failed to open file for writing key.");
 
     fout << "Key:\n";
     fout.write(reinterpret_cast<const char*>(key), AES_KEY_SIZE);
