@@ -32,13 +32,10 @@ void EncryptedText::decrypt() {
 }
 
 void EncryptedText::generateKey() {
+    // high-entropy
     std::random_device rd;
-    std::mt19937 rng(rd());
-
-    // 16 bytes with no bias
-    std::uniform_int_distribution<int> byteDistribution(0, 255);
 
     for (int i = 0; i < AES_KEY_SIZE; ++i) {
-        key[i] = static_cast<uint8_t>(byteDistribution(rng));
+        key[i] = static_cast<uint8_t>(rd() % 256);
     }
 }

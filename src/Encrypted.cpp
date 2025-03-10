@@ -30,7 +30,7 @@ EncryptedText::KeyFileStatus EncryptedText::validateKeyFile(const std::string &i
     std::string line;
     std::getline(fin, line);
 
-    // should have "Key:" t the beginning if key was created by this program
+    // should have "Key:" at the beginning if key was created by this program
     if (line != "Key:") {
         fin.close();
         return KeyFileStatus::InvalidKey;
