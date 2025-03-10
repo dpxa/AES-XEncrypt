@@ -1,4 +1,4 @@
-# AES-256-XEncrypt
+# AES-XEncrypt
 
 **Recursive AES256 Encryption for File/Directory Structures**
 
