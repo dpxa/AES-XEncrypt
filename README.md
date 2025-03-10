@@ -11,6 +11,11 @@ It was built to practice file and directory encryption, UI design, and multithre
 
 ---
 
+<p align="center">
+  <img src="assets/encrypt.png" alt="Encrypted Image" width="500">
+  <img src="assets/decrypt.png" alt="Decrypted Image" width="500">
+</p>
+
 ## Features
 
 - **AES-256:** Highest security possible.
