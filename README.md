@@ -13,6 +13,8 @@ It was built to practice file and directory encryption, UI design, and multithre
 
 <p align="center">
   <img src="assets/encrypt.png" alt="Encrypted Image" width="800">
+</p>
+<p align="center">
   <img src="assets/decrypt.png" alt="Decrypted Image" width="800">
 </p>
 
@@ -24,15 +26,11 @@ It was built to practice file and directory encryption, UI design, and multithre
 - **Cross-Platform:** Works on multiple operating systems (Qt framework)
 - **User-Friendly UI**
 
----
-
 > [!WARNING]  
 > Created for educational purposes only. The developer is not liable for any damages caused from using this software. It is **highly recommended** to use well-tested and trusted libraries such as [OpenSSL](https://www.openssl.org), [libsodium](https://libsodium.org), or [Crypto++](https://www.cryptopp.com) for real world encryption.
-
----
 
 ## Installation
 
 1. Dowload the .zip release folder.
-2. Run AES-256-XEncrypt.exe.
+2. Run AES-XEncrypt.exe.
 3. This application is unsigned, so a popup will show. On windows, it is titled "Windows protected your PC". Navigate to "More info" -> "Run anyway" to run the executable.
