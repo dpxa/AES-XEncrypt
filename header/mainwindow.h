@@ -29,8 +29,9 @@ private slots:
     void on_setKeyPath_clicked();
 
     void on_clearFileNamesList_clicked();
-
+    
 private:
+    void updateThroughputDisplay();
     void updateButtonColors();
 
     Ui::MainWindow *ui;
@@ -38,6 +39,8 @@ private:
     // labels for current path and key path (child of scrollBarArea)
     QLabel *showPath;
     QLabel *showKeyPath;
+    QLabel *throughputLabel;
+    QTimer *throughputTimer;
 
     DirectoryDFS ddfs;
     EncryptedText encryptedText;

@@ -38,8 +38,8 @@ foreach ($key in $allKeys) {
 }
 
 if ($discrepancies.Count -eq 0) {
-    Write-Host "True - Folders are identical"  -ForegroundColor Green
+    Write-Host "Folders are identical"  -ForegroundColor Green
 } else {
-    Write-Host "False - Discrepancies found"  -ForegroundColor Red
+    Write-Host "Discrepancies found"  -ForegroundColor Red
     $discrepancies | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
 }

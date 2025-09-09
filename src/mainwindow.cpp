@@ -19,6 +19,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->scrollAreaDirPath->setWidget(showPath);
     showKeyPath = new QLabel(this);
     ui->scrollAreaKeyPath->setWidget(showKeyPath);
+    
+    // throughput display
+    throughputLabel = new QLabel(this);
+    ui->statusbar->addPermanentWidget(throughputLabel);
 }
 
 MainWindow::~MainWindow()
@@ -26,6 +30,7 @@ MainWindow::~MainWindow()
     delete ui;
     delete showPath;
     delete showKeyPath;
+    delete throughputLabel;
 }
 
 void MainWindow::updateButtonColors() {
@@ -99,6 +104,21 @@ void MainWindow::on_setKeyPath_clicked()
     updateButtonColors();
 }
 
+// updates after each file is processed (list is updated)
+void MainWindow::updateThroughputDisplay() {
+    double throughput = ddfs.getCurrentThroughputMBps();
+    size_t totalBytes = ddfs.getTotalBytesProcessed();
+    int filesProcessed = ddfs.getFilesProcessed();
+    double elapsedTime = ddfs.getElapsedTimeSeconds();
+    double totalMB = totalBytes / (1024.0 * 1024.0);
+
+    throughputLabel->setText(QString("Throughput: %1 MB/s | Files: %2 | Total: %3 MB | Time: %4 s")
+                            .arg(QString::number(throughput, 'f', 2))
+                            .arg(filesProcessed)
+                            .arg(QString::number(totalMB, 'f', 2))
+                            .arg(QString::number(elapsedTime, 'f', 2)));
+}
+
 void MainWindow::on_EncryptButton_clicked()
 {
     // save key file if needed
@@ -120,6 +140,7 @@ void MainWindow::on_EncryptButton_clicked()
     auto fileCallback = [this](const QString &msg) {
         QMetaObject::invokeMethod(ui->fileNamesList, [this, msg]() {
             ui->fileNamesList->insertItem(0, msg);
+            updateThroughputDisplay();
         }, Qt::QueuedConnection);
     };
 
@@ -162,6 +183,7 @@ void MainWindow::on_DecryptButton_clicked()
     auto fileCallback = [this](const QString &msg) {
         QMetaObject::invokeMethod(ui->fileNamesList, [this, msg]() {
             ui->fileNamesList->insertItem(0, msg);
+            updateThroughputDisplay();
         }, Qt::QueuedConnection);
     };
 
