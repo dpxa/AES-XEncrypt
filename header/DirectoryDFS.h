@@ -31,7 +31,7 @@ public:
 
     // throughput measurement functions
     void resetThroughputStats();
-    double getCurrentThroughputMBps() const;
+    double getCurrentThroughputBytes() const;
     size_t getTotalBytesProcessed() const { return totalBytesProcessed; }
     int getFilesProcessed() const { return filesProcessed; }
     double getElapsedTimeSeconds() const;

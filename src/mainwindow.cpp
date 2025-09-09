@@ -106,16 +106,39 @@ void MainWindow::on_setKeyPath_clicked()
 
 // updates after each file is processed (list is updated)
 void MainWindow::updateThroughputDisplay() {
-    double throughput = ddfs.getCurrentThroughputMBps();
+    double throughputBps = ddfs.getCurrentThroughputBytes();
     size_t totalBytes = ddfs.getTotalBytesProcessed();
     int filesProcessed = ddfs.getFilesProcessed();
     double elapsedTime = ddfs.getElapsedTimeSeconds();
-    double totalMB = totalBytes / (1024.0 * 1024.0);
 
-    throughputLabel->setText(QString("Throughput: %1 MB/s | Files: %2 | Total: %3 MB | Time: %4 s")
-                            .arg(QString::number(throughput, 'f', 2))
+    QString throughputStr;
+    
+    if (throughputBps >= 1024.0 * 1024.0 * 1024.0) {
+        throughputStr = QString("%1 GB/s").arg(QString::number(throughputBps / (1024.0 * 1024.0 * 1024.0), 'f', 2));
+    } else if (throughputBps >= 1024.0 * 1024.0) {
+        throughputStr = QString("%1 MB/s").arg(QString::number(throughputBps / (1024.0 * 1024.0), 'f', 2));
+    } else if (throughputBps >= 1024.0) {
+        throughputStr = QString("%1 KB/s").arg(QString::number(throughputBps / 1024.0, 'f', 2));
+    } else {
+        throughputStr = QString("%1 B/s").arg(QString::number(throughputBps, 'f', 2));
+    }
+    
+    QString totalSizeStr;
+    
+    if (totalBytes >= 1024LL * 1024LL * 1024LL) {
+        totalSizeStr = QString("%1 GB").arg(QString::number(totalBytes / (1024.0 * 1024.0 * 1024.0), 'f', 2));
+    } else if (totalBytes >= 1024LL * 1024LL) {
+        totalSizeStr = QString("%1 MB").arg(QString::number(totalBytes / (1024.0 * 1024.0), 'f', 2));
+    } else if (totalBytes >= 1024LL) {
+        totalSizeStr = QString("%1 KB").arg(QString::number(totalBytes / 1024.0, 'f', 2));
+    } else {
+        totalSizeStr = QString("%1 B").arg(totalBytes);
+    }
+
+    throughputLabel->setText(QString("Throughput: %1 | Files: %2 | Total: %3 | Time: %4 s")
+                            .arg(throughputStr)
                             .arg(filesProcessed)
-                            .arg(QString::number(totalMB, 'f', 2))
+                            .arg(totalSizeStr)
                             .arg(QString::number(elapsedTime, 'f', 2)));
 }
 

@@ -15,10 +15,10 @@ void DirectoryDFS::resetThroughputStats() {
     filesProcessed = 0;
 }
 
-double DirectoryDFS::getCurrentThroughputMBps() const {
+double DirectoryDFS::getCurrentThroughputBytes() const {
     auto elapsed = getElapsedTimeSeconds();
     if (elapsed > 0.0) {
-        return (totalBytesProcessed / (1024.0 * 1024.0)) / elapsed;
+        return totalBytesProcessed / elapsed;
     }
     return 0.0;
 }

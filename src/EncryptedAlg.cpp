@@ -1,41 +1,55 @@
 #include "../header/Encrypted.h"
-#include "../header/AesObject.h"
-#include <random>
+#include <openssl/evp.h>
+#include <openssl/rand.h>
+#include <vector>
+#include <memory>
 
 void EncryptedText::encrypt() {
-    AesObject aes;
+    auto ctx = std::unique_ptr<EVP_CIPHER_CTX, decltype(&EVP_CIPHER_CTX_free)>(
+        EVP_CIPHER_CTX_new(), EVP_CIPHER_CTX_free
+    );
+    if (!ctx) return;
 
-    // padding - data size must be multiple of 16
-    aes.Pad(data);
+    if (!EVP_EncryptInit_ex(ctx.get(), EVP_aes_256_ecb(), nullptr, key, nullptr)) return;
 
-    uint8_t rks[aes.expKeySize];
-    aes.keyEx(key, rks);
+    std::vector<uint8_t> ciphertext(data.size() + EVP_CIPHER_block_size(EVP_aes_256_ecb()));
+    int len;
+    int ciphertext_len;
+    
+    // does not pad data
+    if (!EVP_EncryptUpdate(ctx.get(), ciphertext.data(), &len, data.data(), data.size())) return;
+    ciphertext_len = len;
 
-    size_t n = data.size();
-    for (size_t i = 0; i < n; i += 16) {
-        aes.encB(&data[i], rks);
-    }
+    if (!EVP_EncryptFinal_ex(ctx.get(), ciphertext.data() + len, &len)) return;
+    ciphertext_len += len;
+    
+    ciphertext.resize(ciphertext_len);
+    data = std::move(ciphertext);
 }
 
 void EncryptedText::decrypt() {
-    AesObject aes;
+    auto ctx = std::unique_ptr<EVP_CIPHER_CTX, decltype(&EVP_CIPHER_CTX_free)>(
+        EVP_CIPHER_CTX_new(), EVP_CIPHER_CTX_free
+    );
+    if (!ctx) return;
 
-    uint8_t rks[aes.expKeySize];
-    aes.keyEx(key, rks);
+    if (!EVP_DecryptInit_ex(ctx.get(), EVP_aes_256_ecb(), nullptr, key, nullptr)) return;
 
-    size_t n = data.size();
-    for (size_t i = 0; i < n; i += 16) {
-        aes.decB(&data[i], rks);
-    }
+    std::vector<uint8_t> plaintext(data.size());
+    int len;
+    int plaintext_len;
+    
+    // does not unpad data
+    if (!EVP_DecryptUpdate(ctx.get(), plaintext.data(), &len, data.data(), data.size())) return;
+    plaintext_len = len;
 
-    aes.Unpad(data);
+    if (!EVP_DecryptFinal_ex(ctx.get(), plaintext.data() + len, &len)) return;
+    plaintext_len += len;
+
+    plaintext.resize(plaintext_len);
+    data = std::move(plaintext);
 }
 
 void EncryptedText::generateKey() {
-    // high-entropy
-    std::random_device rd;
-
-    for (int i = 0; i < AES_KEY_SIZE; ++i) {
-        key[i] = static_cast<uint8_t>(rd() % 256);
-    }
+    RAND_bytes(key, AES_KEY_SIZE);
 }
