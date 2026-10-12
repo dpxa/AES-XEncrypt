@@ -33,6 +33,7 @@ private slots:
 private:
     void updateThroughputDisplay();
     void updateButtonColors();
+    bool keyPathConflictsWithTarget() const;
 
     Ui::MainWindow *ui;
 
@@ -40,8 +41,6 @@ private:
     QLabel *showPath;
     QLabel *showKeyPath;
     QLabel *throughputLabel;
-    QTimer *throughputTimer;
-
     DirectoryDFS ddfs;
     EncryptedText encryptedText;
 

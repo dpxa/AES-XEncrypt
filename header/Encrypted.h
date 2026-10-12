@@ -16,15 +16,15 @@ private:
     bool encrypted = false;
 
     void generateKey();
-    void encrypt();
-    void decrypt();
+    bool encrypt();
+    bool decrypt();
 
 public:
     EncryptedText() = default;
 
     // recursively called in ddfs
-    void setData(const std::string& file);
-    void saveData(const std::string& file) const;
+    bool setData(const std::string& file);
+    bool saveData(const std::string& file) const;
 
     enum class KeyFileStatus {
         FileNotFound,
@@ -37,7 +37,7 @@ public:
     void setState(bool enc) { encrypted = enc; }
     bool isEncrypted() const { return encrypted; }
 
-    void process() { (encrypted) ? decrypt() : encrypt(); }
+    bool process() { return encrypted ? decrypt() : encrypt(); }
 
     // only used if key file did not exist before
     void saveKey() const;

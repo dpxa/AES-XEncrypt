@@ -13,6 +13,7 @@ void DirectoryDFS::resetThroughputStats() {
     startTime = std::chrono::high_resolution_clock::now();
     totalBytesProcessed = 0;
     filesProcessed = 0;
+    filesFailed = 0;
 }
 
 double DirectoryDFS::getCurrentThroughputBytes() const {
@@ -35,40 +36,68 @@ void DirectoryDFS::performDFS(std::function<void(const QString&)> fileCallback) 
     int rootPathLen = root.parent_path().string().length() + 1;
     
     std::string encStatus = encryptedText.isEncrypted() ? "Decrypted:   " : "Encrypted:   ";
-    
+
     resetThroughputStats();
 
-    if (std::filesystem::is_regular_file(root)) {
-        processFile(root);
-        totalBytesProcessed += std::filesystem::file_size(root);
-        filesProcessed++;
-        
-        QString msg = QDateTime::currentDateTime().toString("HH:mm:ss") +
-                      "   " + QString::fromStdString(encStatus + root.string().substr(rootPathLen));
-        fileCallback(msg);
-    } else {
-        for (const auto& entry : std::filesystem::recursive_directory_iterator(root)) {
-            if (entry.is_regular_file()) {
-                processFile(entry.path());
-                totalBytesProcessed += std::filesystem::file_size(entry.path());
-                filesProcessed++;
-                
-                QString msg = QDateTime::currentDateTime().toString("HH:mm:ss") +
-                              "   " + QString::fromStdString(encStatus + entry.path().string().substr(rootPathLen));
-                fileCallback(msg);
+    try {
+        auto reportProcessedFile = [&](const std::filesystem::path& filePath) {
+            std::error_code error;
+            const auto fileSize = std::filesystem::file_size(filePath, error);
+            if (error) {
+                filesFailed++;
+                qDebug() << "Filesystem error for file: " << filePath.string().c_str()
+                         << '\n' << error.message().c_str() << '\n';
+                return;
+            }
+            if (!processFile(filePath)) {
+                filesFailed++;
+                return;
+            }
+
+            totalBytesProcessed += fileSize;
+            filesProcessed++;
+
+            QString msg = QDateTime::currentDateTime().toString("HH:mm:ss") +
+                          "   " + QString::fromStdString(encStatus + filePath.string().substr(rootPathLen));
+            fileCallback(msg);
+        };
+
+        if (std::filesystem::is_regular_file(root)) {
+            reportProcessedFile(root);
+        } else {
+            for (const auto& entry : std::filesystem::recursive_directory_iterator(root)) {
+                std::error_code error;
+                const bool isRegularFile = entry.is_regular_file(error);
+                if (error) {
+                    filesFailed++;
+                    continue;
+                }
+                if (isRegularFile) {
+                    reportProcessedFile(entry.path());
+                }
             }
         }
+    } catch (const std::filesystem::filesystem_error& e) {
+        qDebug() << "Filesystem error while processing: " << e.what() << '\n';
     }
 }
 
-void DirectoryDFS::processFile(const std::filesystem::path& filePath) {
+bool DirectoryDFS::processFile(const std::filesystem::path& filePath) {
     try {
-        encryptedText.setData(filePath.string());
-        encryptedText.process();
-        encryptedText.saveData(filePath.string());
+        if (!encryptedText.setData(filePath.string())) {
+            throw std::runtime_error("Failed to read file: " + filePath.string());
+        }
+        if (!encryptedText.process()) {
+            throw std::runtime_error("Encryption/decryption failed for file: " + filePath.string());
+        }
+        if (!encryptedText.saveData(filePath.string())) {
+            throw std::runtime_error("Failed to write encrypted/decrypted file: " + filePath.string());
+        }
+        return true;
 
     } catch (const std::runtime_error& e) {
         qDebug() << "Error processing file: " << filePath.string() << '\n'
                   << "Runtime error: " << e.what() << '\n';
+        return false;
     }
 }

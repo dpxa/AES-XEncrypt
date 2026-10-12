@@ -1,15 +1,14 @@
-#ifndef ENCRYPTIONWORKER_H
-#define ENCRYPTIONWORKER_H
+#ifndef ENCRYPTIONTHREAD_H
+#define ENCRYPTIONTHREAD_H
 
 #include <QObject>
 #include "DirectoryDFS.h"
-#include "Encrypted.h"
 
 class EncryptionWorker : public QObject {
     Q_OBJECT
 public:
-    explicit EncryptionWorker(DirectoryDFS *ddfs, EncryptedText *encryptedText, std::function<void(const QString&)> fileCallback, QObject *parent = nullptr)
-        : QObject(parent), m_ddfs(ddfs), m_encryptedText(encryptedText), callBack(fileCallback) {}
+    explicit EncryptionWorker(DirectoryDFS *ddfs, std::function<void(const QString&)> fileCallback, QObject *parent = nullptr)
+        : QObject(parent), m_ddfs(ddfs), callBack(fileCallback) {}
 
 signals:
     void finished();
@@ -22,8 +21,7 @@ public slots:
 
 private:
     DirectoryDFS *m_ddfs;
-    EncryptedText *m_encryptedText;
     std::function<void(const QString&)> callBack;
 };
 
-#endif // ENCRYPTIONWORKER_H
+#endif // ENCRYPTIONTHREAD_H

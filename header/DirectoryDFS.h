@@ -2,8 +2,9 @@
 #define DIRECTORYDFS_H
 
 #include "Encrypted.h"
+#include <QString>
+#include <functional>
 #include <filesystem>
-#include <QListWidget>
 #include <chrono>
 
 class DirectoryDFS {
@@ -12,11 +13,12 @@ private:
     EncryptedText encryptedText;
     
     // throughput measurement
-    std::chrono::high_resolution_clock::time_point startTime;
+    std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
     size_t totalBytesProcessed = 0;
     int filesProcessed = 0;
+    int filesFailed = 0;
 
-    void processFile(const std::filesystem::path& filePath);
+    bool processFile(const std::filesystem::path& filePath);
 
 public:
     DirectoryDFS() = default;
@@ -34,6 +36,7 @@ public:
     double getCurrentThroughputBytes() const;
     size_t getTotalBytesProcessed() const { return totalBytesProcessed; }
     int getFilesProcessed() const { return filesProcessed; }
+    int getFilesFailed() const { return filesFailed; }
     double getElapsedTimeSeconds() const;
 };
 

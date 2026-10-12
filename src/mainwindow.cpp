@@ -3,6 +3,39 @@
 #include "../header/EncryptionThread.h"
 #include <QMessageBox>
 #include <QThread>
+#include <filesystem>
+
+bool MainWindow::keyPathConflictsWithTarget() const
+{
+    const std::filesystem::path targetPath(ui->dirPath->text().toStdString());
+    const std::filesystem::path keyPath(ui->keyPath->text().toStdString());
+    std::error_code error;
+    const auto target = std::filesystem::weakly_canonical(targetPath, error);
+    if (error) {
+        return false;
+    }
+
+    error.clear();
+    const auto key = std::filesystem::weakly_canonical(keyPath, error);
+    if (error) {
+        return false;
+    }
+
+    if (std::filesystem::is_regular_file(target, error)) {
+        return !error && key == target;
+    }
+    if (error || !std::filesystem::is_directory(target)) {
+        return false;
+    }
+
+    const auto relativeKey = std::filesystem::relative(key, target, error);
+    if (error || relativeKey.empty()) {
+        return !error;
+    }
+
+    const auto firstComponent = *relativeKey.begin();
+    return firstComponent != "..";
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -144,6 +177,12 @@ void MainWindow::updateThroughputDisplay() {
 
 void MainWindow::on_EncryptButton_clicked()
 {
+    if (keyPathConflictsWithTarget()) {
+        QMessageBox::warning(this, "Invalid paths",
+                             "The key file cannot be inside the file or directory being encrypted.");
+        return;
+    }
+
     // save key file if needed
     if (newKey) {
         newKey = false;
@@ -169,13 +208,15 @@ void MainWindow::on_EncryptButton_clicked()
 
     // new thread and worker
     QThread *thread = new QThread;
-    EncryptionWorker *worker = new EncryptionWorker(&ddfs, &encryptedText, fileCallback);
+    EncryptionWorker *worker = new EncryptionWorker(&ddfs, fileCallback);
     worker->moveToThread(thread);
 
     connect(thread, &QThread::started, worker, &EncryptionWorker::process);
 
     connect(worker, &EncryptionWorker::finished, this, [=]() {
-        ui->statusbar->showMessage("Encryption done!");
+        ui->statusbar->showMessage(QString("Encryption finished: %1 succeeded, %2 failed.")
+                                   .arg(ddfs.getFilesProcessed())
+                                   .arg(ddfs.getFilesFailed()));
         ui->DecryptButton->setEnabled(true);
         ui->setDirPath->setEnabled(true);
         ui->setKeyPath->setEnabled(true);
@@ -193,6 +234,12 @@ void MainWindow::on_EncryptButton_clicked()
 
 void MainWindow::on_DecryptButton_clicked()
 {
+    if (keyPathConflictsWithTarget()) {
+        QMessageBox::warning(this, "Invalid paths",
+                             "The key file cannot be inside the file or directory being decrypted.");
+        return;
+    }
+
     encryptedText.setState(true);
 
     ui->EncryptButton->setEnabled(false);
@@ -212,13 +259,15 @@ void MainWindow::on_DecryptButton_clicked()
 
     // new thread and worker
     QThread *thread = new QThread;
-    EncryptionWorker *worker = new EncryptionWorker(&ddfs, &encryptedText, fileCallback);
+    EncryptionWorker *worker = new EncryptionWorker(&ddfs, fileCallback);
     worker->moveToThread(thread);
 
     connect(thread, &QThread::started, worker, &EncryptionWorker::process);
 
     connect(worker, &EncryptionWorker::finished, this, [=]() {
-        ui->statusbar->showMessage("Decryption done!");
+        ui->statusbar->showMessage(QString("Decryption finished: %1 succeeded, %2 failed.")
+                                   .arg(ddfs.getFilesProcessed())
+                                   .arg(ddfs.getFilesFailed()));
         ui->EncryptButton->setEnabled(true);
         ui->setDirPath->setEnabled(true);
         ui->setKeyPath->setEnabled(true);
